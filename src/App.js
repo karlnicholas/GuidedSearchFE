@@ -10,7 +10,8 @@ global.jQuery = $;
 const bootstrap = require('bootstrap');
 //console.log(bootstrap);
 
-const HOST_URL = 'http://localhost:9098/';
+//const HOST_URL = 'http://localhost:9098/';
+const HOST_URL = 'http://rs-opca.b9ad.pro-us-east-1.openshiftapps.com/';
 //const API_BASE_URL = 'http://rs-opca.b9ad.pro-us-east-1.openshiftapps.com/rest/gs';
 const API_BASE_URL = HOST_URL + 'rest/gs';
 
