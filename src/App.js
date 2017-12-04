@@ -22,6 +22,14 @@ class App extends React.Component {
     console.log('app constructor');
     this.state = {
     	myurl: API_BASE_URL + "?highlights=false", 
+        api_param_highlights:'false',
+        api_param_path:'',
+        api_param_term:'',
+        term_all_of:'',
+        term_none_of:'',
+        term_any_of:'',
+        term_exact:'',
+        fragments:'',
     	entries:  [], 
     	breadcrumb: []  
 	};
@@ -29,7 +37,10 @@ class App extends React.Component {
   
   componentDidMount() {
     var _this = this;
-    $.ajax(this.state.myurl).then(function (entries) {
+    let ajax_fetch_url = API_BASE_URL + "?highlights=" + this.state.api_param_highlights + 
+            "&term=" + this.state.api_param_term + "&path=" + this.state.api_param_path;
+//    this.state.myurl
+    $.ajax(ajax_fetch_url).then(function (entries) {
       _this.setState(
 		{entries: setEntries(entries), breadcrumb: setBreadcrumb(entries)}
       );
@@ -53,7 +64,7 @@ class App extends React.Component {
 	 } else if ( l > 0 ) {
 	    return (
             <span>
-                <AppNavBar />
+                <AppNavBar handleFragmentsClick={this.handleFragmentsClick.bind(this)} handleSearchSubmitClick={this.handleSearchSubmitClick.bind(this)} handleClearClick={this.handleClearClick.bind(this)} />
                 <AppBreadcrumb breadcrumb={this.state.breadcrumb} handleBreadcrumbClick={this.handleBreadcrumbClick.bind(this)} />
                 <AppTitleTable entries={this.state.entries} handleDrillInClick={this.handleDrillInClick.bind(this)} />
             </span>
@@ -64,24 +75,100 @@ class App extends React.Component {
 	    )
 	 }
    }
+   
    handleDrillInClick(fullFacet) {
-      var url = API_BASE_URL + "?highlights=false&path=" + fullFacet;
-      var _this = this;
-//      console.log("Full Facet:");
-//      console.log(url);
-      $.ajax(url).then(function (entries) {
-        _this.setState({entries: setEntries(entries), breadcrumb: setBreadcrumb(entries)});
-      });
-    }
+      if ( fullFacet == null )
+      {
+          this.setState({api_param_path: ""});
+      }
+      else
+      {
+          this.setState({api_param_path: fullFacet});
+      }
+      this.handleAjax();
+   }
+   
    handleBreadcrumbClick(fullFacet) {
-      if ( fullFacet == null ) 
-      	var url = API_BASE_URL + "?highlights=false";
-      else 
-      	var url = API_BASE_URL + "?highlights=false&path=" + fullFacet;
-      var _this = this;
-      $.ajax(url).then(function (entries) {
-        _this.setState({entries: setEntries(entries), breadcrumb: setBreadcrumb(entries)});
-      });
+      if ( fullFacet == null )
+      {
+          this.setState({api_param_path: ""});
+      }
+      else
+      {
+          this.setState({api_param_path: fullFacet});
+      }
+      this.handleAjax();
+    }
+   
+   handleClearClick() {
+//    this.setState({
+//        api_param_term: "",
+//        term_all_of:"",
+//        term_none_of:"",
+//        term_any_of:"",
+//        term_exact:""
+//    });
+    this.handleAjax();
+   }
+   
+   handleSearchSubmitClick(event) {
+       event.preventDefault();
+//    this.setState({
+//        api_param_term: $('#search_form_ntm').val(),
+//        term_all_of: "",
+//        term_none_of: "",
+//        term_any_of: "",
+//        term_exact: ""
+//    });
+    this.handleAjax();
+   }
+
+   handleAdvancedSearchSubmitClick(event) {
+       event.preventDefault();
+//        this.setState({
+//            term_all_of: $('#inAll').val(),
+//            term_none_of: $('#inNot').val(),
+//            term_any_of: $('#inAny').val(),
+//            term_exact: $('#inExact').val()
+//        });
+
+       let full_term = '';
+       if(this.state.term_all_of.length)
+       {
+           full_term+= '%2B'+this.state.term_all_of;
+       }
+       if(this.state.term_none_of.length)
+       {
+           full_term+= '-'+this.state.term_none_of;
+       }
+       if(this.state.term_any_of.length)
+       {
+           full_term+= '+'+this.state.term_any_of;
+       }
+       if(this.state.term_exact.length)
+       {
+           full_term+= '+"'+this.state.term_exact+'"';
+       }
+        this.setState({
+            api_param_term: full_term
+        });
+        this.handleAjax();
+   }
+   
+   handleFragmentsClick() {
+//       this.setState({
+//           fragments:'true'
+//       });
+       this.handleAjax();
+   }
+   
+   handleAjax() {
+        let url = API_BASE_URL + "?highlights=" + this.state.api_param_highlights + "&path=" + this.state.api_param_path + 
+                "&term=" + this.state.api_param_term + "&fragments=" + this.state.fragments;
+        var _this = this;
+        $.ajax(url).then(function (entries) {
+            _this.setState({entries: setEntries(entries), breadcrumb: setBreadcrumb(entries)});
+        });
     }
 }
 
@@ -94,58 +181,117 @@ class AppBreadcrumb extends React.Component {
           <Breadcrumb breadcrumb={this.props.breadcrumb} onClick={this.props.handleBreadcrumbClick}/>
         </span>
       )
-   }   
+   }
 }
 
 class AppNavBar extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      value: 'Please write an essay about your favorite DOM element.',
+      search_form_ntm: "",
+      inExact:"",
+      inAll:"",
+      inAny:"",
+      inNot:""
+    };
+
+//handleClearClick
+//handleSearchSubmitClick
+//handleSearchSubmitClick
+//handleAdvancedSearchSubmitClick
+//handleFragmentsClick
+
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.searchInputOnChange = this.searchInputOnChange.bind(this);
+    this.inAllInputOnChange = this.inAllInputOnChange.bind(this);
+    this.inAnyInputOnChange = this.inAnyInputOnChange.bind(this);
+    this.inNotInputOnChange = this.inNotInputOnChange.bind(this);
+    this.inExactInputOnChange = this.inExactInputOnChange.bind(this);
+  }
+  handleSubmit(event) {
+    alert('An essay was submitted: ' + this.state.value);
+    event.preventDefault();
+  }
+  
+  searchInputOnChange(event) {
+      console.log("Val changed to: "+event.target.value);
+      console.log(event.target);
+    this.setState({search_form_ntm: event.target.value});
+  }
+  inAllInputOnChange(event) {
+      console.log("Val changed to: "+event.target.value);
+      console.log(event.target);
+    this.setState({inAll: event.target.value});
+  }
+  inAnyInputOnChange(event) {
+      console.log("Val changed to: "+event.target.value);
+      console.log(event.target);
+    this.setState({inAny: event.target.value});
+  }
+  inNotInputOnChange(event) {
+      console.log("Val changed to: "+event.target.value);
+      console.log(event.target);
+    this.setState({inNot: event.target.value});
+  }
+  inExactInputOnChange(event) {
+      console.log("Val changed to: "+event.target.value);
+      console.log(event.target);
+    this.setState({inExact: event.target.value});
+  }
+  
   render() {
     return (
-        <nav id="navigation" class="navbar navbar-default" role="navigation">
-  <div class="navbar-header">
-    <a href="search" class="navbar-brand">Guided Search</a>
-    <form class="navbar-form navbar-left form-horizontal" role="form" method="post">
-      <input type="text" class="form-control" name="ntm" value="" placeholder="Search" />
-      <div class="btn-group dropdown">
-        <button type="submit" class="btn btn-default">Submit</button>
-        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
-        <div class="dropdown-menu container" style={{ width: 350, padding: 15 }}    >
-            <div class="row">
-            <label for="inAll" class="control-label col-sm-4">All&nbsp;Of:&nbsp;&nbsp;</label>
-            <div class="col-sm-4"><input type="text" class="form-control" name="inAll" value="" id="inAll" /></div>
+        <nav id="navigation" className="navbar navbar-default" role="navigation">
+  <div className="navbar-header">
+    <a href="search" className="navbar-brand">Guided Search</a>
+    <form className="navbar-form navbar-left form-horizontal" role="">
+      <input type="text" className="form-control" value={this.state.search_form_ntm} onChange={this.searchInputOnChange} id="search_form_ntm" name="ntm" placeholder="Search" />
+      <div className="btn-group dropdown">
+        <button type="button" onClick={this.props.handleSearchSubmitClick} className="btn btn-default">Submit</button>
+        <button className="btn btn-default dropdown-toggle" data-toggle="dropdown"><span className="caret"></span></button>
+        <div className="dropdown-menu container" style={{ width: 350, padding: 15 }}    >
+            <div className="row">
+            <label htmlFor="inAll" className="control-label col-sm-4">All&nbsp;Of:&nbsp;&nbsp;</label>
+            <div className="col-sm-4">
+                <input type="text" value={this.state.inAll} onChange={this.inAllInputOnChange} className="form-control" name="inAll" id="inAll" />
             </div>
-            <div class="row">
-            <label for="inNot" class="control-label col-sm-4">None&nbsp;Of:&nbsp;&nbsp;</label>
-            <div class="col-sm-4"><input type="text" class="form-control" name="inNot" value="" id="inNot" /></div>
             </div>
-            <div class="row">
-            <label for="inAny" class="control-label col-sm-4">Any&nbsp;Of:&nbsp;&nbsp;</label>
-            <div class="col-sm-4"><input type="text" class="form-control" name="inAny" value="" id="inAny" /></div>
+            <div className="row">
+            <label htmlFor="inNot" className="control-label col-sm-4">None&nbsp;Of:&nbsp;&nbsp;</label>
+            <div className="col-sm-4">
+                <input type="text" value={this.state.inNot} onChange={this.inNotInputOnChange} className="form-control" name="inNot" id="inNot" />
             </div>
-            <div class="row">
-            <label for="inExact" class="control-label col-sm-4">Exact&nbsp;Phrase:&nbsp;&nbsp;</label>
-            <div class="col-sm-4"><input type="text" class="form-control" name="inExact" value="" id="inExact" /></div>
             </div>
-            <div class="row">
-            <label for="submit" class="control-label col-sm-4"></label>
-            <div class="col-sm-4"><button type="submit" class="form-control" id="submit">Submit</button></div>
+            <div className="row">
+            <label htmlFor="inAny" className="control-label col-sm-4">Any&nbsp;Of:&nbsp;&nbsp;</label>
+            <div className="col-sm-4">
+                <input type="text" value={this.state.inAny} onChange={this.inAnyInputOnChange} className="form-control" name="inAny" id="inAny" />
+            </div>
+            </div>
+            <div className="row">
+            <label htmlFor="inExact" className="control-label col-sm-4">Exact&nbsp;Phrase:&nbsp;&nbsp;</label>
+            <div className="col-sm-4">
+                <input type="text" value={this.state.inExact} onChange={this.inExactInputOnChange} className="form-control" name="inExact" id="inExact" />
+            </div>
+            </div>
+            <div className="row">
+            <label htmlFor="submit" className="control-label col-sm-4"></label>
+            <div className="col-sm-4">
+                <button type="button" onClick={this.props.handleSearchSubmitClick} className="form-control" id="submit">Submit</button>
+            </div>
             </div>
         </div>
       </div>
-      <button type="submit" name="cl" class="btn">Clear</button>
-      
-        
-        
-        
-          <button type="submit" name="to" class="btn" disabled="disabled">Fragments</button>
-        
-      
+      <button type="button" onClick={this.props.handleClearClick} name="cl" className="btn">Clear</button>
+      <button type="button" onClick={this.props.handleFragmentsClick} name="to" className="btn" disabled="disabled">Fragments</button>
       <input type="hidden" name="fs" value="false" />
     </form>
   </div>
-  <div class="navbar-right">
-    <ul class="nav navbar-nav">
-      <li class="dropdown"><a href="#" class="dropdown-toggle navbar-brand" data-toggle="dropdown">Applications <span class="caret"></span></a>
-        <ul class="dropdown-menu" role="menu">
+  <div className="navbar-right">
+    <ul className="nav navbar-nav">
+      <li className="dropdown"><a href="#" className="dropdown-toggle navbar-brand" data-toggle="dropdown">Applications <span className="caret"></span></a>
+        <ul className="dropdown-menu" role="menu">
           <li><a href="http://op-op.b9ad.pro-us-east-1.openshiftapps.com">Court Opinions</a></li>
           <li><a href="http://gs-op.b9ad.pro-us-east-1.openshiftapps.com">Guided Search</a></li>
         </ul>
@@ -195,7 +341,7 @@ class TitleRow extends React.Component{
 	render() {
 	    var statute = this.props.statute;
 //            console.log('Statute: ');
-            console.log(statute);
+//            console.log(statute);
 
 	    return (
 	      <div className="row">
@@ -270,6 +416,7 @@ class Trail extends React.Component{
 	  )
     }
 }
+
 function setEntries(myentries) {
     if ( myentries.entries ) myentries = myentries.entries;
     if ( myentries.length == 0 ) return myentries;
@@ -293,3 +440,17 @@ function setBreadcrumb(myentries) {
 }
 
 
+/**
+ * %2BTimtim+-apple+civil+"Misc"
+ * Any of --> %2B
+ * None of --> -
+ * Any of --> +
+ * Exact Phrase --> +""
+ * 
+ * term_all_of
+ * term_none_of
+ * term_any_of
+ * term_exact
+ * 
+ * fragments
+ */
