@@ -64,7 +64,8 @@ class App extends React.Component {
 	 } else if ( l > 0 ) {
 	    return (
             <span>
-                <AppNavBar handleFragmentsClick={this.handleFragmentsClick.bind(this)} handleSearchSubmitClick={this.handleSearchSubmitClick.bind(this)} handleClearClick={this.handleClearClick.bind(this)} />
+                <AppNavBar handleFragmentsClick={this.handleFragmentsClick.bind(this)} handleSearchSubmitClick={this.handleSearchSubmitClick.bind(this)}
+                          handleAdvancedSearchSubmitClick={this.handleAdvancedSearchSubmitClick.bind(this)}  handleClearClick={this.handleClearClick.bind(this)} />
                 <AppBreadcrumb breadcrumb={this.state.breadcrumb} handleBreadcrumbClick={this.handleBreadcrumbClick.bind(this)} />
                 <AppTitleTable entries={this.state.entries} handleDrillInClick={this.handleDrillInClick.bind(this)} />
             </span>
@@ -108,23 +109,26 @@ class App extends React.Component {
 //        term_any_of:"",
 //        term_exact:""
 //    });
+    $('#search_form_ntm').val("");
     this.handleAjax();
    }
    
    handleSearchSubmitClick(event) {
        event.preventDefault();
+       let search_term = $('#search_form_ntm').val();
 //    this.setState({
-//        api_param_term: $('#search_form_ntm').val(),
+//        api_param_term: search_term,
 //        term_all_of: "",
 //        term_none_of: "",
 //        term_any_of: "",
 //        term_exact: ""
 //    });
+    console.log("Search Term: "+this.state.api_param_term);
     this.handleAjax();
    }
 
    handleAdvancedSearchSubmitClick(event) {
-       event.preventDefault();
+//       event.preventDefault();
 //        this.setState({
 //            term_all_of: $('#inAll').val(),
 //            term_none_of: $('#inNot').val(),
@@ -133,22 +137,23 @@ class App extends React.Component {
 //        });
 
        let full_term = '';
-       if(this.state.term_all_of.length)
+       if($('#inAll').val().length)
        {
-           full_term+= '%2B'+this.state.term_all_of;
+           full_term+= '%2B'+$('#inAll').val();
        }
-       if(this.state.term_none_of.length)
+       if($('#inNot').val().length)
        {
-           full_term+= '-'+this.state.term_none_of;
+           full_term+= '-'+$('#inNot').val();
        }
-       if(this.state.term_any_of.length)
+       if($('#inAny').val().length)
        {
-           full_term+= '+'+this.state.term_any_of;
+           full_term+= '+'+$('#inAny').val();
        }
-       if(this.state.term_exact.length)
+       if($('#inExact').val().length)
        {
-           full_term+= '+"'+this.state.term_exact+'"';
+           full_term+= '+"'+$('#inExact').val()+'"';
        }
+       $('#search_form_ntm').val(full_term);
         this.setState({
             api_param_term: full_term
         });
@@ -164,7 +169,7 @@ class App extends React.Component {
    
    handleAjax() {
         let url = API_BASE_URL + "?highlights=" + this.state.api_param_highlights + "&path=" + this.state.api_param_path + 
-                "&term=" + this.state.api_param_term + "&fragments=" + this.state.fragments;
+                "&term=" + $('#search_form_ntm').val() + "&fragments=" + this.state.fragments;
         var _this = this;
         $.ajax(url).then(function (entries) {
             _this.setState({entries: setEntries(entries), breadcrumb: setBreadcrumb(entries)});
@@ -203,17 +208,66 @@ class AppNavBar extends React.Component {
 //handleFragmentsClick
 
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleAdvancedSearch = this.handleAdvancedSearch.bind(this);
+    this.handleClearSearch = this.handleClearSearch.bind(this);
+    this.handleFragmentSearch = this.handleFragmentSearch.bind(this);
+    
     this.searchInputOnChange = this.searchInputOnChange.bind(this);
     this.inAllInputOnChange = this.inAllInputOnChange.bind(this);
     this.inAnyInputOnChange = this.inAnyInputOnChange.bind(this);
     this.inNotInputOnChange = this.inNotInputOnChange.bind(this);
     this.inExactInputOnChange = this.inExactInputOnChange.bind(this);
   }
+  
+  getSearchParams()
+  {
+      return {
+          term_none_of: this.state.inNot,
+          term_none_of: this.state.inNot,
+      };
+  }
+  
   handleSubmit(event) {
     alert('An essay was submitted: ' + this.state.value);
     event.preventDefault();
   }
-  
+
+  handleAdvancedSearch(event) {
+//    alert('An essay was submitted: ' + this.state.value);
+//    event.preventDefault();
+    
+       let full_term = '';
+       if($('#inAll').val().length)
+       {
+           full_term+= '%2B'+$('#inAll').val();
+       }
+       if($('#inNot').val().length)
+       {
+           full_term+= '-'+$('#inNot').val();
+       }
+       if($('#inAny').val().length)
+       {
+           full_term+= '+'+$('#inAny').val();
+       }
+       if($('#inExact').val().length)
+       {
+           full_term+= '+"'+$('#inExact').val()+'"';
+       }
+       this.setState({search_form_ntm: full_term});
+       this.props.handleAdvancedSearchSubmitClick();
+  }
+  handleClearSearch(event) {
+//    alert('An essay was submitted: ' + this.state.value);
+//    event.preventDefault();
+    this.setState({search_form_ntm: ""});
+    this.props.handleClearClick();
+    
+  }
+  handleFragmentSearch(event) {
+    alert('An essay was submitted: ' + this.state.value);
+    event.preventDefault();
+  }
+
   searchInputOnChange(event) {
       console.log("Val changed to: "+event.target.value);
       console.log(event.target);
@@ -278,12 +332,12 @@ class AppNavBar extends React.Component {
             <div className="row">
             <label htmlFor="submit" className="control-label col-sm-4"></label>
             <div className="col-sm-4">
-                <button type="button" onClick={this.props.handleSearchSubmitClick} className="form-control" id="submit">Submit</button>
+                <button type="button" onClick={this.handleAdvancedSearch} className="form-control" id="submit">Submit</button>
             </div>
             </div>
         </div>
       </div>
-      <button type="button" onClick={this.props.handleClearClick} name="cl" className="btn">Clear</button>
+      <button type="button" onClick={this.handleClearSearch} name="cl" className="btn">Clear</button>
       <button type="button" onClick={this.props.handleFragmentsClick} name="to" className="btn" disabled="disabled">Fragments</button>
       <input type="hidden" name="fs" value="false" />
     </form>
