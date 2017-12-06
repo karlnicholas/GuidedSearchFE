@@ -22,7 +22,7 @@ class App extends React.Component {
     console.log('app constructor');
     this.state = {
     	myurl: API_BASE_URL + "?highlights=false", 
-        api_param_highlights:'false',
+        api_param_highlights:'true',
         api_param_path:'',
         api_param_term:'',
         term_all_of:'',
@@ -372,7 +372,7 @@ class AppStatuteDisplay extends React.Component {
   render() {
     return (
         <div className="panel-group">
-        <div className="panel">
+        <div className="panel panel-default">
           <StatuteDisplayTable entries={this.props.entries} />
         </div>
         </div>
@@ -394,8 +394,8 @@ class TitleTable extends React.Component{
 class TitleRow extends React.Component{
 	render() {
 	    var statute = this.props.statute;
-//            console.log('Statute: ');
-//            console.log(statute);
+            console.log('Statute: ');
+            console.log(statute);
 
 	    return (
 	      <div className="row">
@@ -403,7 +403,9 @@ class TitleRow extends React.Component{
 		      <span className="col-xs-1">&nbsp;</span>
 		      <a onClick={() => this.props.onClick(statute.fullFacet)} href="#">
                       
-                          <span className="col-xs-3">{statute.displayTitle}&nbsp;</span>
+                          <span className="col-xs-3">{statute.displayTitle}&nbsp; 
+                            <span className="badge pull-right">{statute.count}</span>
+                          </span>
                       
                         {
                             statute.statutesBaseClass 
@@ -433,9 +435,10 @@ class StatuteDisplayTable extends React.Component{
           var statute = entries[i];
           statutes.push(<StatuteDisplayRow statute={statute} key={i}/>);
         }
-        return (<span>{statutes}</span>)
+        return (<div className="panel-heading">{statutes}</div>)
     }
 }
+
 class StatuteDisplayRow extends React.Component{
 	render() {
 	    var statute = this.props.statute;
