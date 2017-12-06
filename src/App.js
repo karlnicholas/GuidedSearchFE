@@ -8,7 +8,6 @@ window.jQuery = $;
 window.$ = $;
 global.jQuery = $;
 const bootstrap = require('bootstrap');
-//console.log(bootstrap);
 
 //const HOST_URL = 'http://localhost:9098/';
 const HOST_URL = 'http://rs-opca.b9ad.pro-us-east-1.openshiftapps.com/';
@@ -19,10 +18,10 @@ class App extends React.Component {
 
   constructor(props) {
     super(props);
-    console.log('app constructor');
+//    console.log('app constructor');
     this.state = {
     	myurl: API_BASE_URL + "?highlights=false", 
-        api_param_highlights:'true',
+        api_param_highlights:'false',
         api_param_path:'',
         api_param_term:'',
         term_all_of:'',
@@ -161,9 +160,9 @@ class App extends React.Component {
    }
    
    handleFragmentsClick() {
-//       this.setState({
-//           fragments:'true'
-//       });
+       this.setState({
+           api_param_highlights:'true'
+       });
        this.handleAjax();
    }
    
@@ -193,7 +192,6 @@ class AppNavBar extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: 'Please write an essay about your favorite DOM element.',
       search_form_ntm: "",
       inExact:"",
       inAll:"",
@@ -257,14 +255,14 @@ class AppNavBar extends React.Component {
        this.props.handleAdvancedSearchSubmitClick();
   }
   handleClearSearch(event) {
-//    alert('An essay was submitted: ' + this.state.value);
+
 //    event.preventDefault();
     this.setState({search_form_ntm: ""});
     this.props.handleClearClick();
     
   }
   handleFragmentSearch(event) {
-    alert('An essay was submitted: ' + this.state.value);
+      
     event.preventDefault();
   }
 
@@ -347,7 +345,7 @@ class AppNavBar extends React.Component {
       <li className="dropdown"><a href="#" className="dropdown-toggle navbar-brand" data-toggle="dropdown">Applications <span className="caret"></span></a>
         <ul className="dropdown-menu" role="menu">
           <li><a href="http://op-op.b9ad.pro-us-east-1.openshiftapps.com">Court Opinions</a></li>
-          <li><a href="http://gs-op.b9ad.pro-us-east-1.openshiftapps.com">Guided Search</a></li>
+          <li><a href="/">Guided Search</a></li>
         </ul>
       </li>
     </ul>
@@ -394,8 +392,8 @@ class TitleTable extends React.Component{
 class TitleRow extends React.Component{
 	render() {
 	    var statute = this.props.statute;
-            console.log('Statute: ');
-            console.log(statute);
+//            console.log('Statute: ');
+//            console.log(statute);
 
 	    return (
 	      <div className="row">
@@ -404,7 +402,7 @@ class TitleRow extends React.Component{
 		      <a onClick={() => this.props.onClick(statute.fullFacet)} href="#">
                       
                           <span className="col-xs-3">{statute.displayTitle}&nbsp; 
-                            <span className="badge pull-right">{statute.count}</span>
+                            <span className="badge pull-right">{statute.count ? statute.count : ""}</span>
                           </span>
                       
                         {
