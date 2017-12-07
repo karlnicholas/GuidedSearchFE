@@ -559,9 +559,7 @@ class StatuteDisplayRow extends React.Component{
 //
 	    return (
 	      <div className="panel-body">
-		    <pre>
-                    {statute.text}
-		    </pre>
+		<pre dangerouslySetInnerHTML={{ __html: this.props.statute.text }} />
 	      </div>
 		)
     }
