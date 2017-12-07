@@ -42,7 +42,7 @@ class App extends React.Component {
     console.log("Setting Term: "); console.log(setSearchTerm(entries));
     
       _this.setState(
-		{totalCount: setTotalCount(entries), term: setSearchTerm(entries), entries: setEntries(entries), breadcrumb: setBreadcrumb(entries)}
+		{fragments: setFragments(entries), totalCount: setTotalCount(entries), term: setSearchTerm(entries), entries: setEntries(entries), breadcrumb: setBreadcrumb(entries)}
       );
     });
 
@@ -70,7 +70,7 @@ class App extends React.Component {
                 <AppNavBar term={this.state.term} handleFragmentsClick={this.handleFragmentsClick.bind(this)} handleSearchSubmitClick={this.handleSearchSubmitClick.bind(this)}
                           handleAdvancedSearchSubmitClick={this.handleAdvancedSearchSubmitClick.bind(this)}  handleClearClick={this.handleClearClick.bind(this)} />
                 <AppBreadcrumb breadcrumb={this.state.breadcrumb} handleBreadcrumbClick={this.handleBreadcrumbClick.bind(this)} term={this.state.term} totalCount={this.state.totalCount} />
-                <AppTitleTable entries={this.state.entries} term={this.state.term} handleDrillInClick={this.handleDrillInClick.bind(this)} />
+                <AppTitleTable fragments={this.state.fragments} entries={this.state.entries} term={this.state.term} handleDrillInClick={this.handleDrillInClick.bind(this)} />
                 <div id="footer">Copyright ©, 2014</div>
             </span>
 	    )
@@ -96,7 +96,7 @@ class App extends React.Component {
         var _this = this;
         $.ajax(url).then(function (entries) {
             _this.setState(
-		{totalCount: setTotalCount(entries), term: setSearchTerm(entries), entries: setEntries(entries), breadcrumb: setBreadcrumb(entries)}
+		{fragments: setFragments(entries), totalCount: setTotalCount(entries), term: setSearchTerm(entries), entries: setEntries(entries), breadcrumb: setBreadcrumb(entries)}
             );
         });
    }
@@ -116,7 +116,7 @@ class App extends React.Component {
         var _this = this;
         $.ajax(url).then(function (entries) {
             _this.setState(
-		{totalCount: setTotalCount(entries), term: setSearchTerm(entries), entries: setEntries(entries), breadcrumb: setBreadcrumb(entries)}
+		{fragments: setFragments(entries), totalCount: setTotalCount(entries), term: setSearchTerm(entries), entries: setEntries(entries), breadcrumb: setBreadcrumb(entries)}
             );
         });
 
@@ -200,7 +200,7 @@ class App extends React.Component {
         $.ajax(url).then(function (entries) {
 //            _this.setState({entries: setEntries(entries), breadcrumb: setBreadcrumb(entries)});
             _this.setState(
-		{totalCount: setTotalCount(entries), term: setSearchTerm(entries), entries: setEntries(entries), breadcrumb: setBreadcrumb(entries)}
+		{fragments: setFragments(entries), totalCount: setTotalCount(entries), term: setSearchTerm(entries), entries: setEntries(entries), breadcrumb: setBreadcrumb(entries)}
             );
         });
     }
@@ -211,7 +211,7 @@ export default App;
 class AppBreadcrumb extends React.Component {
   render() {
     return (
-          <Breadcrumb breadcrumb={this.props.breadcrumb} totalCount={this.props.totalCount} term={this.props.term} onClick={this.props.handleBreadcrumbClick}/>
+          <Breadcrumb entries={this.props.entries} breadcrumb={this.props.breadcrumb} totalCount={this.props.totalCount} term={this.props.term} onClick={this.props.handleBreadcrumbClick}/>
       )
    }
 }
@@ -464,7 +464,7 @@ class AppTitleTable extends React.Component {
     return (
         
         <div className="panel-group" id="accordion">
-          <TitleTable entries={this.props.entries} onClick={this.props.handleDrillInClick}/>
+          <TitleTable fragments={this.props.fragments} entries={this.props.entries} onClick={this.props.handleDrillInClick}/>
         
         </div>
       )
@@ -488,9 +488,13 @@ class TitleTable extends React.Component{
         var entries = this.props.entries;
         var l = entries.length;
         var statutes = [];
+        let collapse_data_key = '';
+        let collapse_data_href = '';
         for (var i = 0; i < l; i++) {
           var statute = entries[i];
-          statutes.push(<TitleRow statute={statute} key={i} onClick={(fullFacet)=>this.props.onClick(fullFacet)} />);
+          collapse_data_key = 'collapse'+i;
+          collapse_data_href = '#collapse'+i;
+          statutes.push(<TitleRow fragments={this.props.fragments} statute={statute} collapse_data_href={collapse_data_href} collapse_data_key={collapse_data_key} key={i} onClick={(fullFacet)=>this.props.onClick(fullFacet)} />);
         }
 //        panel-default
         return (<div className="panel ">{statutes}</div>)
@@ -501,12 +505,22 @@ class TitleRow extends React.Component{
 	    var statute = this.props.statute;
 //            console.log('Statute: ');
 //            console.log(statute);
-
+//<pre dangerouslySetInnerHTML={{ __html: this.props.statute.text }} />
 	    return (
 	      <div className="panel-heading">
                 <div className="row panel-title">
 		    <p>
-		      <span className="col-xs-1">&nbsp;</span>
+                    {
+                      this.props.fragments ? 
+                      <span className="col-xs-1">
+                        <a data-toggle="collapse" data-parent="#accordion" href={this.props.collapse_data_href}>
+                            <span className="glyphicon glyphicon-asterisk"></span>
+                        </a>
+                        &nbsp;
+                      </span>
+                      :
+                      <span className="col-xs-1"></span>
+                    }
 		      <a onClick={() => this.props.onClick(statute.fullFacet)} href="#">
                       
                           <span className="col-xs-3">{statute.displayTitle}&nbsp; 
@@ -528,7 +542,17 @@ class TitleRow extends React.Component{
                         }
 		      </a>
 		    </p>
-	      </div>
+	        </div>
+        
+        
+                <div className="panel-collapse collapse" id={this.props.collapse_data_key}>
+                    <div className="panel-body">
+                      <pre dangerouslySetInnerHTML={{ __html: this.props.statute.text }} />
+                    </div>
+                </div>
+  
+  
+  
               </div>
 		)
     }
@@ -574,8 +598,20 @@ class Breadcrumb extends React.Component{
         
         var l = breadcrumb.length;
         var trails = [];
+
         for (var i = 0; i < l; i++) {
-          trails.push(<Trail statutesBaseClass={breadcrumb[i]} key={i} onClick={(fullFacet)=>this.props.onClick(fullFacet)} />);
+
+        let extra_part = '';
+        if(i==(l-1))
+        {
+            let last_section = breadcrumb[breadcrumb.length - 1];
+            if(last_section.pathPart && last_section.statutesBaseClass)
+            {
+                extra_part = ' - ' + last_section.statutesBaseClass.title;
+            }
+        }
+
+          trails.push(<Trail extraPart={extra_part} statutesBaseClass={breadcrumb[i]} key={i} onClick={(fullFacet)=>this.props.onClick(fullFacet)} />);
         }
         if(term && term.length)
         {
@@ -597,7 +633,15 @@ class Trail extends React.Component{
     render() {
       var title = this.props.statutesBaseClass.displayTitle;
       var fullFacet = this.props.statutesBaseClass.fullFacet;
-      if ( title == null ) title = 'Home'; 
+      if ( title == null )
+      {
+          title = 'Home'; 
+      }
+      else
+      {
+          title+=this.props.extraPart;
+      }
+      
       return (
 		<li><a onClick={()=>this.props.onClick(fullFacet)} href="#">{title}</a></li>
 	  )
@@ -637,6 +681,19 @@ function setTotalCount(input_json) {
     }
 }
 
+function setFragments(input_json) {
+    
+//    return true; //testing only
+    if ( input_json.fragments)
+    {
+        return input_json.fragments;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 function setBreadcrumb(myentries) {
 	var breadcrumb = [myentries];
     if ( myentries.entries ) myentries = myentries.entries;
@@ -647,6 +704,8 @@ function setBreadcrumb(myentries) {
       myentries = myentries[0].entries;
       i++;
     }
+//    console.log("breadcrumb: "+breadcrumb);
+//    console.log(breadcrumb);
     return breadcrumb;
 }
 
