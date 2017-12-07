@@ -92,7 +92,7 @@ class App extends React.Component {
           this.setState({api_param_path: fullFacet});
       }
         let url = API_BASE_URL + "?highlights=" + this.state.api_param_highlights + "&path=" + fullFacet + 
-                "&term=" + $('#search_form_ntm').val() + "&fragments=" + this.state.fragments;
+                "&term=" + $('#search_form_ntm').val();// + "&fragments=" + this.state.fragments;
         var _this = this;
         $.ajax(url).then(function (entries) {
             _this.setState(
@@ -112,7 +112,7 @@ class App extends React.Component {
       }
       console.log("Handling handleBreadcrumbClick: fullFacet - " + fullFacet);
         let url = API_BASE_URL + "?highlights=" + this.state.api_param_highlights + "&path=" + fullFacet + 
-                "&term=" + $('#search_form_ntm').val() + "&fragments=" + this.state.fragments;
+                "&term=" + $('#search_form_ntm').val();// + "&fragments=" + this.state.fragments;
         var _this = this;
         $.ajax(url).then(function (entries) {
             _this.setState(
@@ -195,7 +195,7 @@ class App extends React.Component {
        query_string_term = query_string_term.split(' ').join('+');
        console.log("query_string_term: "+query_string_term);
         let url = API_BASE_URL + "?highlights=" + highlights + "&path=" + this.state.api_param_path + 
-                "&term=" + query_string_term + "&fragments=" + this.state.fragments;
+                "&term=" + query_string_term;// + "&fragments=" + this.state.fragments;
         var _this = this;
         $.ajax(url).then(function (entries) {
 //            _this.setState({entries: setEntries(entries), breadcrumb: setBreadcrumb(entries)});
