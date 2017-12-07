@@ -9,19 +9,17 @@ window.$ = $;
 global.jQuery = $;
 const bootstrap = require('bootstrap');
 
-//const HOST_URL = 'http://localhost:9098/';
 const HOST_URL = 'http://rs-opca.b9ad.pro-us-east-1.openshiftapps.com/';
-//const API_BASE_URL = 'http://rs-opca.b9ad.pro-us-east-1.openshiftapps.com/rest/gs';
+
 const API_BASE_URL = HOST_URL + 'rest/gs';
 
 class App extends React.Component {
 
   constructor(props) {
     super(props);
-//    console.log('app constructor');
+
     this.state = {
-    	myurl: API_BASE_URL + "?highlights=false", 
-        api_param_highlights:'false',
+        api_param_highlights:'false', /* frag, fragments, highlights - default false */
         api_param_path:'',
         api_param_term:'',
         term_all_of:'',
@@ -39,7 +37,7 @@ class App extends React.Component {
     var _this = this;
     let ajax_fetch_url = API_BASE_URL + "?highlights=" + this.state.api_param_highlights + 
             "&term=" + this.state.api_param_term + "&path=" + this.state.api_param_path;
-//    this.state.myurl
+
     $.ajax(ajax_fetch_url).then(function (entries) {
     console.log("Setting Term: "); console.log(setSearchTerm(entries));
     
@@ -49,6 +47,7 @@ class App extends React.Component {
     });
 
   }
+  
   render() {
     var entries = this.state.entries;
     var l = entries.length;
@@ -58,7 +57,8 @@ class App extends React.Component {
     if ( l > 0 && entries[0].sectionText) {
 	    return (
             <span>
-                <AppNavBar term={this.state.term} />
+                <AppNavBar term={this.state.term} handleFragmentsClick={this.handleFragmentsClick.bind(this)} handleSearchSubmitClick={this.handleSearchSubmitClick.bind(this)}
+                          handleAdvancedSearchSubmitClick={this.handleAdvancedSearchSubmitClick.bind(this)}  handleClearClick={this.handleClearClick.bind(this)} />
                 <AppBreadcrumb breadcrumb={this.state.breadcrumb} handleBreadcrumbClick={this.handleBreadcrumbClick.bind(this)} term={this.state.term} totalCount={this.state.totalCount} />
                 <AppStatuteDisplay entries={this.state.entries} term={this.state.term} />
                 <div id="footer">Copyright ©, 2014</div>
@@ -82,6 +82,7 @@ class App extends React.Component {
    }
    
    handleDrillInClick(fullFacet) {
+       console.log("Handling drill click: fullFacet - " + fullFacet);
       if ( fullFacet == null )
       {
           this.setState({api_param_path: ""});
@@ -90,7 +91,14 @@ class App extends React.Component {
       {
           this.setState({api_param_path: fullFacet});
       }
-      this.handleAjax();
+        let url = API_BASE_URL + "?highlights=" + this.state.api_param_highlights + "&path=" + fullFacet + 
+                "&term=" + $('#search_form_ntm').val() + "&fragments=" + this.state.fragments;
+        var _this = this;
+        $.ajax(url).then(function (entries) {
+            _this.setState(
+		{totalCount: setTotalCount(entries), term: setSearchTerm(entries), entries: setEntries(entries), breadcrumb: setBreadcrumb(entries)}
+            );
+        });
    }
    
    handleBreadcrumbClick(fullFacet) {
@@ -102,33 +110,33 @@ class App extends React.Component {
       {
           this.setState({api_param_path: fullFacet});
       }
-      this.handleAjax();
+      console.log("Handling handleBreadcrumbClick: fullFacet - " + fullFacet);
+        let url = API_BASE_URL + "?highlights=" + this.state.api_param_highlights + "&path=" + fullFacet + 
+                "&term=" + $('#search_form_ntm').val() + "&fragments=" + this.state.fragments;
+        var _this = this;
+        $.ajax(url).then(function (entries) {
+            _this.setState(
+		{totalCount: setTotalCount(entries), term: setSearchTerm(entries), entries: setEntries(entries), breadcrumb: setBreadcrumb(entries)}
+            );
+        });
+
     }
    
    handleClearClick() {
-//    this.setState({
-//        api_param_term: "",
-//        term_all_of:"",
-//        term_none_of:"",
-//        term_any_of:"",
-//        term_exact:""
-//    });
-    $('#search_form_ntm').val("");
-    this.handleAjax();
+        console.log("Handling clearClick");
+        $('#search_form_ntm').val("");
+        $('#inAll').val("");
+        $('#inNot').val("");
+        $('#inAny').val("");
+        $('#inExact').val("");
+        this.handleAjax();
    }
    
    handleSearchSubmitClick(event) {
-       event.preventDefault();
-       let search_term = $('#search_form_ntm').val();
-//    this.setState({
-//        api_param_term: search_term,
-//        term_all_of: "",
-//        term_none_of: "",
-//        term_any_of: "",
-//        term_exact: ""
-//    });
-    console.log("Search Term: "+this.state.api_param_term);
-    this.handleAjax();
+        event.preventDefault();
+        let search_term = $('#search_form_ntm').val();
+        console.log("Search Term: "+this.state.api_param_term);
+        this.handleAjax();
    }
 
    handleAdvancedSearchSubmitClick(event) {
@@ -140,40 +148,54 @@ class App extends React.Component {
 //            term_exact: $('#inExact').val()
 //        });
 
-       let full_term = '';
-       if($('#inAll').val().length)
-       {
-           full_term+= '%2B'+$('#inAll').val();
-       }
-       if($('#inNot').val().length)
-       {
-           full_term+= '-'+$('#inNot').val();
-       }
-       if($('#inAny').val().length)
-       {
-           full_term+= '+'+$('#inAny').val();
-       }
-       if($('#inExact').val().length)
-       {
-           full_term+= '+"'+$('#inExact').val()+'"';
-       }
-       $('#search_form_ntm').val(full_term);
+//       let full_term = '';
+//       let full_term_query = '';
+//       if($('#inAll').val().length)
+//       {
+//           full_term+= '%2B'+$('#inAll').val();
+//           full_term_query+='+'+$('#inAll').val()+" ";
+//       }
+//       if($('#inNot').val().length)
+//       {
+//           full_term+= '-'+$('#inNot').val();
+//           full_term_query+='-'+$('#inNot').val()+" ";
+//       }
+//       if($('#inAny').val().length)
+//       {
+//           full_term+= '+'+$('#inAny').val();
+//           full_term_query+=' '+$('#inAny').val()+" ";
+//       }
+//       if($('#inExact').val().length)
+//       {
+//           full_term+= '+"'+$('#inExact').val()+'"';
+//           full_term_query+='"'+$('#inExact').val()+'"';
+//       }
+//       console.log("full_term_query - "+full_term_query);
+       
+        let full_term_query = $('#search_form_ntm').val();
         this.setState({
-            api_param_term: full_term
+            api_param_term: full_term_query
         });
         this.handleAjax();
    }
    
    handleFragmentsClick() {
+       //use value from hidden input field
        this.setState({
-           api_param_highlights:'true'
+           api_param_highlights: $("#highlights").val()
        });
        this.handleAjax();
    }
    
    handleAjax() {
-        let url = API_BASE_URL + "?highlights=" + this.state.api_param_highlights + "&path=" + this.state.api_param_path + 
-                "&term=" + $('#search_form_ntm').val() + "&fragments=" + this.state.fragments;
+       
+       let highlights = $("#highlights").val();
+       let query_string_term = $('#search_form_ntm').val();
+       query_string_term = query_string_term.split('+').join('%2B');
+       query_string_term = query_string_term.split(' ').join('+');
+       console.log("query_string_term: "+query_string_term);
+        let url = API_BASE_URL + "?highlights=" + highlights + "&path=" + this.state.api_param_path + 
+                "&term=" + query_string_term + "&fragments=" + this.state.fragments;
         var _this = this;
         $.ajax(url).then(function (entries) {
 //            _this.setState({entries: setEntries(entries), breadcrumb: setBreadcrumb(entries)});
@@ -202,7 +224,8 @@ class AppNavBar extends React.Component {
       inExact:"",
       inAll:"",
       inAny:"",
-      inNot:""
+      inNot:"",
+      highlights:"false"
     };
 
 //handleClearClick
@@ -233,7 +256,12 @@ class AppNavBar extends React.Component {
   
   handleSubmit(event) {
     
-    event.preventDefault();
+    //    event.preventDefault();
+//    let search_form_ntm = $('#search_form_ntm').val();
+    let search_form_ntm = '+all -none any "exact"';
+    let search_form_ntm_array = search_form_ntm.split(' ');
+//    for(let i=0; i<)
+    
   }
 
   handleAdvancedSearch(event) {
@@ -243,33 +271,63 @@ class AppNavBar extends React.Component {
        let full_term = '';
        if($('#inAll').val().length)
        {
-           full_term+= '%2B'+$('#inAll').val();
+           full_term+= '+'+$('#inAll').val()+" ";
        }
        if($('#inNot').val().length)
        {
-           full_term+= '-'+$('#inNot').val();
+           full_term+= '-'+$('#inNot').val()+" ";
        }
        if($('#inAny').val().length)
        {
-           full_term+= '+'+$('#inAny').val();
+           full_term+= ''+$('#inAny').val()+" ";
        }
        if($('#inExact').val().length)
        {
-           full_term+= '+"'+$('#inExact').val()+'"';
+           full_term+= '"'+$('#inExact').val()+'"';
        }
+       $('#search_form_ntm').val(full_term)
        this.setState({search_form_ntm: full_term});
        this.props.handleAdvancedSearchSubmitClick();
   }
+  
   handleClearSearch(event) {
-
-//    event.preventDefault();
-    this.setState({search_form_ntm: ""});
-    this.props.handleClearClick();
+    this.setState({
+        search_form_ntm: "",
+        inExact:"",
+        inAll:"",
+        inAny:"",
+        inNot:"",
+        highlights:"false"
+    });
+    $("#highlights").val("false");
+    $("#highlights_button").removeClass("btn-info");
     
+    this.props.handleClearClick();
   }
+  
   handleFragmentSearch(event) {
       
-    event.preventDefault();
+//    event.preventDefault();
+    let prev_highlights = $("#highlights").val();
+    console.log("Updating Value - ");
+    if(prev_highlights=='false')
+    {
+        console.log("Previous Highlights - False");
+        $("#highlights").val("true");
+        this.setState({ highlights:"true"});
+        console.log("Highlights Set to True");
+        $("#highlights_button").addClass("btn-info");
+    }
+    else
+    {
+        console.log("Previous Highlights - True");
+        $("#highlights").val("false");
+        this.setState({ highlights:"false"});
+        console.log("Highlights Set to False");
+        $("#highlights_button").removeClass("btn-info");
+    }
+    this.props.handleFragmentsClick();
+
   }
 
   searchInputOnChange(event) {
@@ -298,6 +356,11 @@ class AppNavBar extends React.Component {
     this.setState({inExact: event.target.value});
   }
   
+//  highlightsOnChange(event) {
+//      console.log("Val changed to: "+event.target.value);
+//      console.log(event.target);
+//    this.setState({inNot: event.target.value});
+//  }
   render() {
       
       var input_search_term = this.props.term;
@@ -344,8 +407,8 @@ class AppNavBar extends React.Component {
         </div>
       </div>
       <button type="button" onClick={this.handleClearSearch} name="cl" className="btn">Clear</button>
-      <FragmentsButton handleFragmentsClick={this.props.handleFragmentsClick} term={this.props.term} />
-      <input type="hidden" name="fs" value="false" />
+      <FragmentsButton handleFragmentsClick={this.handleFragmentSearch} term={this.props.term} />
+      <input type="hidden" id="highlights" name="fs" value={this.state.highlights} />
     </form>
   </div>
   <div className="navbar-right">
@@ -371,6 +434,7 @@ class FragmentsButton extends React.Component {
             <button type="button" 
                 onClick={this.props.handleFragmentsClick} 
                 name="to" 
+                id="highlights_button"
                 className="btn" 
             >
                 Fragments 
@@ -383,6 +447,7 @@ class FragmentsButton extends React.Component {
             <button type="button" 
                 onClick={this.props.handleFragmentsClick} 
                 name="to" 
+                id="highlights_button"
                 className="btn" 
                 disabled="disabled"
             >
@@ -402,7 +467,7 @@ class AppTitleTable extends React.Component {
         </div>
         </div>
       )
-   }   
+   }
 }
 class AppStatuteDisplay extends React.Component {
   render() {
@@ -476,10 +541,7 @@ class StatuteDisplayTable extends React.Component{
           var statute = entries[i];
         if(statute.text && statute.text.length && search_term && search_term.length)
         {
-//            let search_term = 'test';
-            console.log('search_term: ');
-            console.log(search_term);
-            statute.text = statute.text.split(search_term).join('<mark><strong><u>' + search_term + '</u></strong></mark>');
+//            statute.text = statute.text.split(search_term).join('<mark><strong><u>' + search_term + '</u></strong></mark>');
         }
 
           statutes.push(<StatuteDisplayRow statute={statute} key={i}/>);
