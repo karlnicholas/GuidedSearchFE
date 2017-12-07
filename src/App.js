@@ -460,11 +460,12 @@ class FragmentsButton extends React.Component {
 
 class AppTitleTable extends React.Component {
   render() {
+//      <div className="container-fluid"></div>
     return (
-        <div className="container-fluid">
+        
         <div className="panel-group" id="accordion">
           <TitleTable entries={this.props.entries} onClick={this.props.handleDrillInClick}/>
-        </div>
+        
         </div>
       )
    }
@@ -491,7 +492,8 @@ class TitleTable extends React.Component{
           var statute = entries[i];
           statutes.push(<TitleRow statute={statute} key={i} onClick={(fullFacet)=>this.props.onClick(fullFacet)} />);
         }
-        return (<div className="panel panel-default">{statutes}</div>)
+//        panel-default
+        return (<div className="panel ">{statutes}</div>)
     }
 }
 class TitleRow extends React.Component{
@@ -546,7 +548,8 @@ class StatuteDisplayTable extends React.Component{
 
           statutes.push(<StatuteDisplayRow statute={statute} key={i}/>);
         }
-        return (<div className="panel panel-default">{statutes}</div>)
+//        panel-default
+        return (<div className="panel ">{statutes}</div>)
     }
 }
 
