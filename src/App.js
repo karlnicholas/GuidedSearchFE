@@ -58,7 +58,7 @@ class App extends React.Component {
     if ( l > 0 && entries[0].sectionText) {
 	    return (
             <span>
-                <AppNavBar />
+                <AppNavBar term={this.state.term} />
                 <AppBreadcrumb breadcrumb={this.state.breadcrumb} handleBreadcrumbClick={this.handleBreadcrumbClick.bind(this)} term={this.state.term} totalCount={this.state.totalCount} />
                 <AppStatuteDisplay entries={this.state.entries} term={this.state.term} />
                 <div id="footer">Copyright ©, 2014</div>
@@ -67,7 +67,7 @@ class App extends React.Component {
 	 } else if ( l > 0 ) {
 	    return (
             <span>
-                <AppNavBar handleFragmentsClick={this.handleFragmentsClick.bind(this)} handleSearchSubmitClick={this.handleSearchSubmitClick.bind(this)}
+                <AppNavBar term={this.state.term} handleFragmentsClick={this.handleFragmentsClick.bind(this)} handleSearchSubmitClick={this.handleSearchSubmitClick.bind(this)}
                           handleAdvancedSearchSubmitClick={this.handleAdvancedSearchSubmitClick.bind(this)}  handleClearClick={this.handleClearClick.bind(this)} />
                 <AppBreadcrumb breadcrumb={this.state.breadcrumb} handleBreadcrumbClick={this.handleBreadcrumbClick.bind(this)} term={this.state.term} totalCount={this.state.totalCount} />
                 <AppTitleTable entries={this.state.entries} term={this.state.term} handleDrillInClick={this.handleDrillInClick.bind(this)} />
@@ -232,7 +232,7 @@ class AppNavBar extends React.Component {
   }
   
   handleSubmit(event) {
-    alert('An essay was submitted: ' + this.state.value);
+    
     event.preventDefault();
   }
 
@@ -299,6 +299,8 @@ class AppNavBar extends React.Component {
   }
   
   render() {
+      
+      var input_search_term = this.props.term;
     return (
         <nav id="navigation" className="navbar navbar-default navbar-fixed-top" role="navigation">
   <div className="navbar-header">
@@ -342,7 +344,7 @@ class AppNavBar extends React.Component {
         </div>
       </div>
       <button type="button" onClick={this.handleClearSearch} name="cl" className="btn">Clear</button>
-      <button type="button" onClick={this.props.handleFragmentsClick} name="to" className="btn" disabled="disabled">Fragments</button>
+      <FragmentsButton handleFragmentsClick={this.props.handleFragmentsClick} term={this.props.term} />
       <input type="hidden" name="fs" value="false" />
     </form>
   </div>
@@ -359,6 +361,36 @@ class AppNavBar extends React.Component {
 </nav>
       )
    }   
+}
+
+class FragmentsButton extends React.Component {
+  render() {
+      if(this.props.term)
+      {
+          return (
+            <button type="button" 
+                onClick={this.props.handleFragmentsClick} 
+                name="to" 
+                className="btn" 
+            >
+                Fragments 
+            </button>
+          )
+      }
+      else
+      {
+        return (
+            <button type="button" 
+                onClick={this.props.handleFragmentsClick} 
+                name="to" 
+                className="btn" 
+                disabled="disabled"
+            >
+                Fragments 
+            </button>
+          )
+      }
+   }
 }
 
 class AppTitleTable extends React.Component {
@@ -442,7 +474,7 @@ class StatuteDisplayTable extends React.Component{
         var statutes = [];
         for (var i = 0; i < l; i++) {
           var statute = entries[i];
-        if(statute.text && statute.text.length)
+        if(statute.text && statute.text.length && search_term && search_term.length)
         {
 //            let search_term = 'test';
             console.log('search_term: ');
