@@ -29,6 +29,7 @@ class App extends React.Component {
         term_any_of:'',
         term_exact:'',
         fragments:'',
+        term:'',
     	entries:  [], 
     	breadcrumb: []  
 	};
@@ -40,8 +41,10 @@ class App extends React.Component {
             "&term=" + this.state.api_param_term + "&path=" + this.state.api_param_path;
 //    this.state.myurl
     $.ajax(ajax_fetch_url).then(function (entries) {
+    console.log("Setting Term: "); console.log(setSearchTerm(entries));
+    
       _this.setState(
-		{entries: setEntries(entries), breadcrumb: setBreadcrumb(entries)}
+		{totalCount: setTotalCount(entries), term: setSearchTerm(entries), entries: setEntries(entries), breadcrumb: setBreadcrumb(entries)}
       );
     });
 
@@ -56,8 +59,9 @@ class App extends React.Component {
 	    return (
             <span>
                 <AppNavBar />
-                <AppBreadcrumb breadcrumb={this.state.breadcrumb} handleBreadcrumbClick={this.handleBreadcrumbClick.bind(this)} />
-                <AppStatuteDisplay entries={this.state.entries}/>
+                <AppBreadcrumb breadcrumb={this.state.breadcrumb} handleBreadcrumbClick={this.handleBreadcrumbClick.bind(this)} term={this.state.term} totalCount={this.state.totalCount} />
+                <AppStatuteDisplay entries={this.state.entries} term={this.state.term} />
+                <div id="footer">Copyright ©, 2014</div>
             </span>
 	      )
 	 } else if ( l > 0 ) {
@@ -65,8 +69,9 @@ class App extends React.Component {
             <span>
                 <AppNavBar handleFragmentsClick={this.handleFragmentsClick.bind(this)} handleSearchSubmitClick={this.handleSearchSubmitClick.bind(this)}
                           handleAdvancedSearchSubmitClick={this.handleAdvancedSearchSubmitClick.bind(this)}  handleClearClick={this.handleClearClick.bind(this)} />
-                <AppBreadcrumb breadcrumb={this.state.breadcrumb} handleBreadcrumbClick={this.handleBreadcrumbClick.bind(this)} />
-                <AppTitleTable entries={this.state.entries} handleDrillInClick={this.handleDrillInClick.bind(this)} />
+                <AppBreadcrumb breadcrumb={this.state.breadcrumb} handleBreadcrumbClick={this.handleBreadcrumbClick.bind(this)} term={this.state.term} totalCount={this.state.totalCount} />
+                <AppTitleTable entries={this.state.entries} term={this.state.term} handleDrillInClick={this.handleDrillInClick.bind(this)} />
+                <div id="footer">Copyright ©, 2014</div>
             </span>
 	    )
 	 } else {
@@ -171,7 +176,10 @@ class App extends React.Component {
                 "&term=" + $('#search_form_ntm').val() + "&fragments=" + this.state.fragments;
         var _this = this;
         $.ajax(url).then(function (entries) {
-            _this.setState({entries: setEntries(entries), breadcrumb: setBreadcrumb(entries)});
+//            _this.setState({entries: setEntries(entries), breadcrumb: setBreadcrumb(entries)});
+            _this.setState(
+		{totalCount: setTotalCount(entries), term: setSearchTerm(entries), entries: setEntries(entries), breadcrumb: setBreadcrumb(entries)}
+            );
         });
     }
 }
@@ -181,9 +189,7 @@ export default App;
 class AppBreadcrumb extends React.Component {
   render() {
     return (
-        <span>
-          <Breadcrumb breadcrumb={this.props.breadcrumb} onClick={this.props.handleBreadcrumbClick}/>
-        </span>
+          <Breadcrumb breadcrumb={this.props.breadcrumb} totalCount={this.props.totalCount} term={this.props.term} onClick={this.props.handleBreadcrumbClick}/>
       )
    }
 }
@@ -294,7 +300,7 @@ class AppNavBar extends React.Component {
   
   render() {
     return (
-        <nav id="navigation" className="navbar navbar-default" role="navigation">
+        <nav id="navigation" className="navbar navbar-default navbar-fixed-top" role="navigation">
   <div className="navbar-header">
     <a href="search" className="navbar-brand">Guided Search</a>
     <form className="navbar-form navbar-left form-horizontal" role="">
@@ -358,8 +364,8 @@ class AppNavBar extends React.Component {
 class AppTitleTable extends React.Component {
   render() {
     return (
-        <div className="panel-group">
-        <div className="panel">
+        <div className="container-fluid">
+        <div className="panel-group" id="accordion">
           <TitleTable entries={this.props.entries} onClick={this.props.handleDrillInClick}/>
         </div>
         </div>
@@ -368,11 +374,13 @@ class AppTitleTable extends React.Component {
 }
 class AppStatuteDisplay extends React.Component {
   render() {
+//      <div className="panel panel-default">
+//      </div>
     return (
-        <div className="panel-group">
-        <div className="panel panel-default">
-          <StatuteDisplayTable entries={this.props.entries} />
-        </div>
+        <div className="container-fluid">
+            <div className="panel-group" id="accordion">
+                <StatuteDisplayTable entries={this.props.entries} term={this.props.term} />
+            </div>
         </div>
       )
    }   
@@ -386,7 +394,7 @@ class TitleTable extends React.Component{
           var statute = entries[i];
           statutes.push(<TitleRow statute={statute} key={i} onClick={(fullFacet)=>this.props.onClick(fullFacet)} />);
         }
-        return (<span>{statutes}</span>)
+        return (<div className="panel panel-default">{statutes}</div>)
     }
 }
 class TitleRow extends React.Component{
@@ -396,7 +404,8 @@ class TitleRow extends React.Component{
 //            console.log(statute);
 
 	    return (
-	      <div className="row">
+	      <div className="panel-heading">
+                <div className="row panel-title">
 		    <p>
 		      <span className="col-xs-1">&nbsp;</span>
 		      <a onClick={() => this.props.onClick(statute.fullFacet)} href="#">
@@ -421,30 +430,43 @@ class TitleRow extends React.Component{
 		      </a>
 		    </p>
 	      </div>
+              </div>
 		)
     }
 }
 class StatuteDisplayTable extends React.Component{
     render() {
         var entries = this.props.entries;
+        var search_term = this.props.term;
         var l = entries.length;
         var statutes = [];
         for (var i = 0; i < l; i++) {
           var statute = entries[i];
+        if(statute.text && statute.text.length)
+        {
+//            let search_term = 'test';
+            console.log('search_term: ');
+            console.log(search_term);
+            statute.text = statute.text.split(search_term).join('<mark><strong><u>' + search_term + '</u></strong></mark>');
+        }
+
           statutes.push(<StatuteDisplayRow statute={statute} key={i}/>);
         }
-        return (<div className="panel-heading">{statutes}</div>)
+        return (<div className="panel panel-default">{statutes}</div>)
     }
 }
 
 class StatuteDisplayRow extends React.Component{
 	render() {
 	    var statute = this.props.statute;
+//            		      <span className="col-xs-1">&nbsp;</span>
+//		      <span className="col-xs-11">Again{statute.text}</span>
+//
+//
 	    return (
-	      <div className="row">
+	      <div className="panel-body">
 		    <pre>
-		      <span className="col-xs-1">&nbsp;</span>
-		      <span className="col-xs-11">{statute.text}</span>
+                    {statute.text}
 		    </pre>
 	      </div>
 		)
@@ -453,12 +475,27 @@ class StatuteDisplayRow extends React.Component{
 class Breadcrumb extends React.Component{
     render() {
         var breadcrumb = this.props.breadcrumb;
+        var term = this.props.term;
+        
         var l = breadcrumb.length;
         var trails = [];
         for (var i = 0; i < l; i++) {
           trails.push(<Trail statutesBaseClass={breadcrumb[i]} key={i} onClick={(fullFacet)=>this.props.onClick(fullFacet)} />);
         }
-      return (<ol className="breadcrumb">{trails}</ol>)
+        if(term && term.length)
+        {
+            return (
+                    <ol className="breadcrumb">
+                    {trails}
+                    <li><span className="badge pull-right">{this.props.totalCount}</span></li>
+                    </ol>
+                    )
+        }
+        else
+        {
+            return (<ol className="breadcrumb">{trails}</ol>)
+        }
+      
     }
 }
 class Trail extends React.Component{
@@ -479,6 +516,30 @@ function setEntries(myentries) {
       myentries = myentries[0].entries;
     }
     return myentries;
+}
+
+function setSearchTerm(input_json) {
+    
+    if ( input_json.term && input_json.term.length )
+    {
+        return input_json.term;
+    }
+    else
+    {
+        return "";
+    }
+}
+
+function setTotalCount(input_json) {
+    
+    if ( input_json.totalCount)
+    {
+        return input_json.totalCount;
+    }
+    else
+    {
+        return "";
+    }
 }
 
 function setBreadcrumb(myentries) {
