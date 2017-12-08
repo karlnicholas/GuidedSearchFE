@@ -133,7 +133,9 @@ class App extends React.Component {
    }
    
    handleSearchSubmitClick(event) {
-        event.preventDefault();
+//       console.log(event);
+       
+//        event.preventDefault();
         let search_term = $('#search_form_ntm').val();
         console.log("Search Term: "+this.state.api_param_term);
         this.handleAjax();
@@ -235,6 +237,7 @@ class AppNavBar extends React.Component {
 //handleFragmentsClick
 
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleFormOnKeyPress = this.handleFormOnKeyPress.bind(this);
     this.handleAdvancedSearch = this.handleAdvancedSearch.bind(this);
     this.handleClearSearch = this.handleClearSearch.bind(this);
     this.handleFragmentSearch = this.handleFragmentSearch.bind(this);
@@ -254,20 +257,41 @@ class AppNavBar extends React.Component {
       };
   }
   
+   handleFormOnKeyPress(event)
+   {
+       
+         if(event.key == 'Enter'){
+            console.log('enter press here! ');
+            console.log(event.target.id);
+            if(event.target.id=='inAny' || event.target.id=='inNot' || event.target.id=='inAll' || event.target.id=='inExact')
+            {
+                this.handleAdvancedSearch(event);
+            }
+            else
+            {
+                
+            }
+          }
+          else
+          {
+              console.log('no enter press here! ')
+          }
+   }
+   
   handleSubmit(event) {
-    
-    //    event.preventDefault();
-//    let search_form_ntm = $('#search_form_ntm').val();
-    let search_form_ntm = '+all -none any "exact"';
-    let search_form_ntm_array = search_form_ntm.split(' ');
-//    for(let i=0; i<)
-    
+    event.preventDefault();
+    this.setState({
+        inExact:"",
+        inAll:"",
+        inAny:"",
+        inNot:""
+    });
+    this.props.handleSearchSubmitClick();
   }
 
   handleAdvancedSearch(event) {
-//    alert('An essay was submitted: ' + this.state.value);
-//    event.preventDefault();
-    
+    event.preventDefault();
+    $('.dropdown.open .dropdown-toggle').dropdown('toggle');
        let full_term = '';
        if($('#inAll').val().length)
        {
@@ -377,39 +401,39 @@ class AppNavBar extends React.Component {
   <div className="navbar-header">
     <a href="search" className="navbar-brand">Guided Search</a>
     <form className="navbar-form navbar-left form-horizontal" method="post" role="">
-      <input type="text" className="form-control" value={this.state.search_form_ntm} onChange={this.searchInputOnChange} id="search_form_ntm" name="ntm" placeholder="Search" />
+      <input  type="text" className="form-control" value={this.state.search_form_ntm} onChange={this.searchInputOnChange} id="search_form_ntm" name="ntm" placeholder="Search" />
       <div className="btn-group dropdown">
-        <input type="submit" value="Submit" onClick={this.props.handleSearchSubmitClick} className="btn btn-default" />
+        <input type="submit" value="Submit" onClick={this.handleSubmit} className="btn btn-default" />
         <button className="btn btn-default dropdown-toggle" data-toggle="dropdown"><span className="caret"></span></button>
         <div className="dropdown-menu container" style={{ width: 350, padding: 15 }}    >
             <div className="row">
             <label htmlFor="inAll" className="control-label col-sm-4">All&nbsp;Of:&nbsp;&nbsp;</label>
             <div className="col-sm-4">
-                <input type="text" value={this.state.inAll} onChange={this.inAllInputOnChange} className="form-control" name="inAll" id="inAll" />
+                <input onKeyPress={this.handleFormOnKeyPress}  type="text" value={this.state.inAll} onChange={this.inAllInputOnChange} className="form-control" name="inAll" id="inAll" />
             </div>
             </div>
             <div className="row">
             <label htmlFor="inNot" className="control-label col-sm-4">None&nbsp;Of:&nbsp;&nbsp;</label>
             <div className="col-sm-4">
-                <input type="text" value={this.state.inNot} onChange={this.inNotInputOnChange} className="form-control" name="inNot" id="inNot" />
+                <input onKeyPress={this.handleFormOnKeyPress}  type="text" value={this.state.inNot} onChange={this.inNotInputOnChange} className="form-control" name="inNot" id="inNot" />
             </div>
             </div>
             <div className="row">
             <label htmlFor="inAny" className="control-label col-sm-4">Any&nbsp;Of:&nbsp;&nbsp;</label>
             <div className="col-sm-4">
-                <input type="text" value={this.state.inAny} onChange={this.inAnyInputOnChange} className="form-control" name="inAny" id="inAny" />
+                <input onKeyPress={this.handleFormOnKeyPress}  type="text" value={this.state.inAny} onChange={this.inAnyInputOnChange} className="form-control" name="inAny" id="inAny" />
             </div>
             </div>
             <div className="row">
             <label htmlFor="inExact" className="control-label col-sm-4">Exact&nbsp;Phrase:&nbsp;&nbsp;</label>
             <div className="col-sm-4">
-                <input type="text" value={this.state.inExact} onChange={this.inExactInputOnChange} className="form-control" name="inExact" id="inExact" />
+                <input onKeyPress={this.handleFormOnKeyPress}  type="text" value={this.state.inExact} onChange={this.inExactInputOnChange} className="form-control" name="inExact" id="inExact" />
             </div>
             </div>
             <div className="row">
             <label htmlFor="submit" className="control-label col-sm-4"></label>
             <div className="col-sm-4">
-                <button type="submit" onClick={this.handleAdvancedSearch} className="form-control" id="submit">Submit</button>
+                <input type="submit" value="Submit" onClick={this.handleAdvancedSearch} className="form-control" id="submit" />
             </div>
             </div>
         </div>
