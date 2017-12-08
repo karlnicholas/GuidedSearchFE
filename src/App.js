@@ -437,7 +437,7 @@ class AppNavBar extends React.Component {
   </div>
   <div className="navbar-right">
     <ul className="nav navbar-nav">
-      <li className="dropdown"><a href="#" className="dropdown-toggle navbar-brand" data-toggle="dropdown">Applications <span className="caret"></span></a>
+      <li className="dropdown"><a style={{cursor: 'pointer'}} className="dropdown-toggle navbar-brand" data-toggle="dropdown">Applications <span className="caret"></span></a>
         <ul className="dropdown-menu" role="menu">
           <li><a href="http://op-op.b9ad.pro-us-east-1.openshiftapps.com">Court Opinions</a></li>
           <li><a href="/">Guided Search</a></li>
@@ -557,7 +557,7 @@ class TitleRow extends React.Component{
                       :
                       <span className="col-xs-1"></span>
                     }
-		      <a onClick={() => this.props.onClick(statute.fullFacet)} href="#">
+		      <a onClick={() => this.props.onClick(statute.fullFacet)} style={{cursor: 'pointer'}} >
                       
                           <span className="col-xs-3">{statute.displayTitle}&nbsp; 
                             <span className="badge pull-right">{statute.count ? statute.count : ""}</span>
@@ -680,7 +680,7 @@ class Trail extends React.Component{
       }
       
       return (
-		<li><a onClick={()=>this.props.onClick(fullFacet)} href="#">{title}</a></li>
+		<li><a onClick={()=>this.props.onClick(fullFacet)} style={{cursor: 'pointer'}}>{title}</a></li>
 	  )
     }
 }
