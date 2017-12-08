@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import ReactDOM from 'react';
-import logo from './logo.svg';
+import React from 'react';
+//import ReactDOM from 'react';
+//import logo from './logo.svg';
 import './App.css';
 import $ from 'jquery';
 
@@ -136,7 +136,7 @@ class App extends React.Component {
 //       console.log(event);
        
 //        event.preventDefault();
-        let search_term = $('#search_form_ntm').val();
+//        let search_term = $('#search_form_ntm').val();
         console.log("Search Term: "+this.state.api_param_term);
         this.handleAjax();
    }
@@ -249,21 +249,13 @@ class AppNavBar extends React.Component {
     this.inExactInputOnChange = this.inExactInputOnChange.bind(this);
   }
   
-  getSearchParams()
-  {
-      return {
-          term_none_of: this.state.inNot,
-          term_none_of: this.state.inNot,
-      };
-  }
-  
    handleFormOnKeyPress(event)
    {
        
-         if(event.key == 'Enter'){
+         if(event.key === 'Enter'){
             console.log('enter press here! ');
             console.log(event.target.id);
-            if(event.target.id=='inAny' || event.target.id=='inNot' || event.target.id=='inAll' || event.target.id=='inExact')
+            if(event.target.id==='inAny' || event.target.id==='inNot' || event.target.id==='inAll' || event.target.id==='inExact')
             {
                 this.handleAdvancedSearch(event);
             }
@@ -342,7 +334,7 @@ class AppNavBar extends React.Component {
 //    event.preventDefault();
     let prev_highlights = $("#highlights").val();
     console.log("Updating Value - ");
-    if(prev_highlights=='false')
+    if(prev_highlights==='false')
     {
         console.log("Previous Highlights - False");
         $("#highlights").val("true");
@@ -395,12 +387,12 @@ class AppNavBar extends React.Component {
 //  }
   render() {
       
-      var input_search_term = this.props.term;
+//      var input_search_term = this.props.term;
     return (
-        <nav id="navigation" className="navbar navbar-default navbar-fixed-top" role="navigation">
+        <nav id="navigation" className="navbar navbar-default navbar-fixed-top">
   <div className="navbar-header">
     <a href="search" className="navbar-brand">Guided Search</a>
-    <form className="navbar-form navbar-left form-horizontal" method="post" role="">
+    <form className="navbar-form navbar-left form-horizontal" method="post">
       <input  type="text" className="form-control" value={this.state.search_form_ntm} onChange={this.searchInputOnChange} id="search_form_ntm" name="ntm" placeholder="Search" />
       <div className="btn-group dropdown">
         <input type="submit" value="Submit" onClick={this.handleSubmit} className="btn btn-default" />
@@ -623,7 +615,7 @@ class StatuteDisplayTable extends React.Component{
 
 class StatuteDisplayRow extends React.Component{
 	render() {
-	    var statute = this.props.statute;
+//	    var statute = this.props.statute;
 //            		      <span className="col-xs-1">&nbsp;</span>
 //		      <span className="col-xs-11">Again{statute.text}</span>
 //
@@ -646,7 +638,7 @@ class Breadcrumb extends React.Component{
         for (var i = 0; i < l; i++) {
 
         let extra_part = '';
-        if(i==(l-1))
+        if(i===(l-1))
         {
             let last_section = breadcrumb[breadcrumb.length - 1];
             if(last_section.pathPart && last_section.statutesBaseClass)
@@ -723,7 +715,7 @@ class StatuteRangeDisplay extends React.Component{
 
 function setEntries(myentries) {
     if ( myentries.entries ) myentries = myentries.entries;
-    if ( myentries.length == 0 ) return myentries;
+    if ( myentries.length === 0 ) return myentries;
     while ( myentries[0].pathPart ) {
       myentries = myentries[0].entries;
     }
@@ -770,7 +762,7 @@ function setFragments(input_json) {
 function setBreadcrumb(myentries) {
 	var breadcrumb = [myentries];
     if ( myentries.entries ) myentries = myentries.entries;
-    if ( myentries.length == 0 ) return myentries;
+    if ( myentries.length === 0 ) return myentries;
     var i = 1;
     while ( myentries[0].pathPart ) {
       breadcrumb[i] = myentries[0];
