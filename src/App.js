@@ -523,7 +523,7 @@ class TitleRow extends React.Component{
                 <div className="row panel-title">
 		    <p>
                     {
-                      this.props.fragments ? 
+                      this.props.fragments && statuteSectionText.length ? 
                       <span className="col-xs-1">
                         <a data-toggle="collapse" data-parent="#accordion" href={this.props.collapse_data_href}>
                             <span className="glyphicon glyphicon-asterisk"></span>
