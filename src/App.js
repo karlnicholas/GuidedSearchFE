@@ -7,7 +7,7 @@ import $ from 'jquery';
 window.jQuery = $;
 window.$ = $;
 global.jQuery = $;
-const bootstrap = require('bootstrap');
+//const bootstrap = require('bootstrap');
 
 const HOST_URL = 'http://rs-opca.b9ad.pro-us-east-1.openshiftapps.com/';
 
