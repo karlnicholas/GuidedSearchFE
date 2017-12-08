@@ -506,6 +506,18 @@ class TitleRow extends React.Component{
 //            console.log('Statute: ');
 //            console.log(statute);
 //<pre dangerouslySetInnerHTML={{ __html: this.props.statute.text }} />
+            var statuteSectionText = '';
+            
+            if(statute.entries && statute.entries.length)
+            {
+                for(let i=0;i< statute.entries.length; i++)
+                {
+                    if(statute.entries[i].sectionText)
+                    {
+                        statuteSectionText+=statute.entries[i].text+'<br /><br /><br />';
+                    }
+                }
+            }
 	    return (
 	      <div className="panel-heading">
                 <div className="row panel-title">
@@ -532,7 +544,7 @@ class TitleRow extends React.Component{
                             ? 
                             <span>
                             <span className="col-xs-5">{statute.statutesBaseClass.title}</span>
-                            <span className="col-xs-3">§§&nbsp;{statute.statutesBaseClass.statuteRange.sNumber.sectionNumber}-{statute.statutesBaseClass.statuteRange.eNumber.sectionNumber} </span>
+                                <StatuteRangeDisplay statutesBaseClass={statute.statutesBaseClass} />
                             </span>
                             :
                             <span>
@@ -547,7 +559,7 @@ class TitleRow extends React.Component{
         
                 <div className="panel-collapse collapse" id={this.props.collapse_data_key}>
                     <div className="panel-body">
-                      <pre dangerouslySetInnerHTML={{ __html: this.props.statute.text }} />
+                      <pre dangerouslySetInnerHTML={{ __html: statuteSectionText }} />
                     </div>
                 </div>
   
@@ -629,6 +641,7 @@ class Breadcrumb extends React.Component{
       
     }
 }
+
 class Trail extends React.Component{
     render() {
       var title = this.props.statutesBaseClass.displayTitle;
@@ -644,6 +657,34 @@ class Trail extends React.Component{
       
       return (
 		<li><a onClick={()=>this.props.onClick(fullFacet)} href="#">{title}</a></li>
+	  )
+    }
+}
+
+
+class StatuteRangeDisplay extends React.Component{
+//    <span className="col-xs-3">§§&nbsp;{statute.statutesBaseClass.statuteRange.sNumber.sectionNumber}-{statute.statutesBaseClass.statuteRange.eNumber.sectionNumber} </span>
+    render() {
+      let statuteRange = this.props.statutesBaseClass.statuteRange;
+      
+      return (
+              <span> 
+		{
+                    statuteRange && statuteRange.sNumber && statuteRange.eNumber 
+                    ?
+                    <span className="col-xs-3">§§&nbsp;{statuteRange.sNumber.sectionNumber}-{statuteRange.eNumber.sectionNumber} </span>
+                    :
+                    statuteRange.sNumber 
+                        ?
+                        <span className="col-xs-3">§§&nbsp;{statuteRange.sNumber.sectionNumber}- </span>
+                        :
+                        statuteRange.eNumber 
+                            ?
+                            <span className="col-xs-3">§§&nbsp;-{statuteRange.eNumber.sectionNumber} </span>
+                            :
+                            <span className="col-xs-3">§§&nbsp;</span>
+                }
+              </span>
 	  )
     }
 }
