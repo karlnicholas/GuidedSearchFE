@@ -271,11 +271,19 @@ class AppNavBar extends React.Component {
        let full_term = '';
        if($('#inAll').val().length)
        {
-           full_term+= '+'+$('#inAll').val()+" ";
+           let input_term = $('#inAll').val();
+           input_term = input_term.trim();
+           input_term = input_term.split(' ').join(' +');
+           full_term+= '+'+input_term+" ";
        }
        if($('#inNot').val().length)
        {
-           full_term+= '-'+$('#inNot').val()+" ";
+//           full_term+= '-'+$('#inNot').val()+" ";
+           let input_term = $('#inNot').val();
+           input_term = input_term.trim();
+           input_term = input_term.split(' ').join(' -');
+           full_term+= '-'+input_term+" ";
+
        }
        if($('#inAny').val().length)
        {
@@ -368,10 +376,10 @@ class AppNavBar extends React.Component {
         <nav id="navigation" className="navbar navbar-default navbar-fixed-top" role="navigation">
   <div className="navbar-header">
     <a href="search" className="navbar-brand">Guided Search</a>
-    <form className="navbar-form navbar-left form-horizontal" role="">
+    <form className="navbar-form navbar-left form-horizontal" method="post" role="">
       <input type="text" className="form-control" value={this.state.search_form_ntm} onChange={this.searchInputOnChange} id="search_form_ntm" name="ntm" placeholder="Search" />
       <div className="btn-group dropdown">
-        <button type="button" onClick={this.props.handleSearchSubmitClick} className="btn btn-default">Submit</button>
+        <input type="submit" value="Submit" onClick={this.props.handleSearchSubmitClick} className="btn btn-default" />
         <button className="btn btn-default dropdown-toggle" data-toggle="dropdown"><span className="caret"></span></button>
         <div className="dropdown-menu container" style={{ width: 350, padding: 15 }}    >
             <div className="row">
@@ -401,7 +409,7 @@ class AppNavBar extends React.Component {
             <div className="row">
             <label htmlFor="submit" className="control-label col-sm-4"></label>
             <div className="col-sm-4">
-                <button type="button" onClick={this.handleAdvancedSearch} className="form-control" id="submit">Submit</button>
+                <button type="submit" onClick={this.handleAdvancedSearch} className="form-control" id="submit">Submit</button>
             </div>
             </div>
         </div>
