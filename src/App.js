@@ -52,9 +52,7 @@ class App extends React.Component {
   render() {
     var entries = this.state.entries;
     var l = entries.length;
-    console.log("entries length");
-    console.log(l);
-//    console.log(this.state.entries);
+//    console.log("entries length"); console.log(l);
     if ( l > 0 && entries[0].sectionText) {
 	    return (
             <span>
@@ -96,7 +94,7 @@ class App extends React.Component {
           this.setState({api_param_path: fullFacet});
       }
         let url = API_BASE_URL + "?highlights=" + this.state.api_param_highlights + "&path=" + fullFacet + 
-                "&term=" + $('#search_form_ntm').val();// + "&fragments=" + this.state.fragments;
+                "&term=" + $('#search_form_ntm').val();
         var _this = this;
         $.ajax(url).then(function (entries) {
             _this.setState(
@@ -119,7 +117,7 @@ class App extends React.Component {
       }
       console.log("Handling handleBreadcrumbClick: fullFacet - " + fullFacet);
         let url = API_BASE_URL + "?highlights=" + this.state.api_param_highlights + "&path=" + fullFacet + 
-                "&term=" + $('#search_form_ntm').val();// + "&fragments=" + this.state.fragments;
+                "&term=" + $('#search_form_ntm').val();
         var _this = this;
         $.ajax(url).then(function (entries) {
             _this.setState(
@@ -148,7 +146,6 @@ class App extends React.Component {
     */
    handleSearchSubmitClick(event) {
 //       console.log(event);
-       
 //        event.preventDefault();
 //        let search_term = $('#search_form_ntm').val();
         console.log("Search Term: "+this.state.api_param_term);
@@ -159,38 +156,6 @@ class App extends React.Component {
     * Advanced Search click handler
     */
    handleAdvancedSearchSubmitClick(event) {
-//       event.preventDefault();
-//        this.setState({
-//            term_all_of: $('#inAll').val(),
-//            term_none_of: $('#inNot').val(),
-//            term_any_of: $('#inAny').val(),
-//            term_exact: $('#inExact').val()
-//        });
-
-//       let full_term = '';
-//       let full_term_query = '';
-//       if($('#inAll').val().length)
-//       {
-//           full_term+= '%2B'+$('#inAll').val();
-//           full_term_query+='+'+$('#inAll').val()+" ";
-//       }
-//       if($('#inNot').val().length)
-//       {
-//           full_term+= '-'+$('#inNot').val();
-//           full_term_query+='-'+$('#inNot').val()+" ";
-//       }
-//       if($('#inAny').val().length)
-//       {
-//           full_term+= '+'+$('#inAny').val();
-//           full_term_query+=' '+$('#inAny').val()+" ";
-//       }
-//       if($('#inExact').val().length)
-//       {
-//           full_term+= '+"'+$('#inExact').val()+'"';
-//           full_term_query+='"'+$('#inExact').val()+'"';
-//       }
-//       console.log("full_term_query - "+full_term_query);
-       
         let full_term_query = $('#search_form_ntm').val();
         this.setState({
             api_param_term: full_term_query
@@ -255,12 +220,6 @@ class AppNavBar extends React.Component {
       inNot:"",
       highlights:"false"
     };
-
-//handleClearClick
-//handleSearchSubmitClick
-//handleSearchSubmitClick
-//handleAdvancedSearchSubmitClick
-//handleFragmentsClick
 
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleFormOnKeyPress = this.handleFormOnKeyPress.bind(this);
@@ -406,14 +365,8 @@ class AppNavBar extends React.Component {
     this.setState({inExact: event.target.value});
   }
   
-//  highlightsOnChange(event) {
-//      console.log("Val changed to: "+event.target.value);
-//      console.log(event.target);
-//    this.setState({inNot: event.target.value});
-//  }
   render() {
       
-//      var input_search_term = this.props.term;
     return (
         <nav id="navigation" className="navbar navbar-default navbar-fixed-top">
   <div className="navbar-header">
@@ -532,8 +485,7 @@ class AppTitleTable extends React.Component {
  */
 class AppStatuteDisplay extends React.Component {
   render() {
-//      <div className="panel panel-default">
-//      </div>
+//      <div className="panel panel-default"></div>
     return (
         <div className="container-fluid">
             <div className="panel-group" id="accordion">
@@ -571,9 +523,6 @@ class TitleTable extends React.Component{
 class TitleRow extends React.Component{
 	render() {
 	    var statute = this.props.statute;
-//            console.log('Statute: ');
-//            console.log(statute);
-//<pre dangerouslySetInnerHTML={{ __html: this.props.statute.text }} />
             var statuteSectionText = '';
             
             if(statute.entries && statute.entries.length)
@@ -666,11 +615,6 @@ class StatuteDisplayTable extends React.Component{
  */
 class StatuteDisplayRow extends React.Component{
 	render() {
-//	    var statute = this.props.statute;
-//            		      <span className="col-xs-1">&nbsp;</span>
-//		      <span className="col-xs-11">Again{statute.text}</span>
-//
-//
 	    return (
 	      <div className="panel-body">
 		<pre dangerouslySetInnerHTML={{ __html: this.props.statute.text }} />
@@ -747,7 +691,6 @@ class Trail extends React.Component{
  * StatuteRange component class
  */
 class StatuteRangeDisplay extends React.Component{
-//    <span className="col-xs-3">§§&nbsp;{statute.statutesBaseClass.statuteRange.sNumber.sectionNumber}-{statute.statutesBaseClass.statuteRange.eNumber.sectionNumber} </span>
     render() {
       let statuteRange = this.props.statutesBaseClass.statuteRange;
       
@@ -820,7 +763,6 @@ function setTotalCount(input_json) {
  */
 function setFragments(input_json) {
     
-//    return true; //testing only
     if ( input_json.fragments)
     {
         return input_json.fragments;
@@ -844,7 +786,5 @@ function setBreadcrumb(myentries) {
       myentries = myentries[0].entries;
       i++;
     }
-//    console.log("breadcrumb: "+breadcrumb);
-//    console.log(breadcrumb);
     return breadcrumb;
 }
