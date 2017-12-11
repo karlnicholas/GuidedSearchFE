@@ -129,6 +129,7 @@ class App extends React.Component {
         $('#inNot').val("");
         $('#inAny').val("");
         $('#inExact').val("");
+        $('.panel-collapse').collapse('hide');
         this.handleAjax();
    }
    
