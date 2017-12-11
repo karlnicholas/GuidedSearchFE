@@ -36,7 +36,7 @@ class App extends React.Component {
   
   componentDidMount() {
     var _this = this;
-    let ajax_fetch_url = API_BASE_URL + "?highlights=" + this.state.api_param_highlights + 
+    let ajax_fetch_url = API_BASE_URL + "?fragments=" + this.state.api_param_highlights + 
             "&term=" + this.state.api_param_term + "&path=" + this.state.api_param_path;
 
     $.ajax(ajax_fetch_url).then(function (entries) {
@@ -93,7 +93,7 @@ class App extends React.Component {
       {
           this.setState({api_param_path: fullFacet});
       }
-        let url = API_BASE_URL + "?highlights=" + this.state.api_param_highlights + "&path=" + fullFacet + 
+        let url = API_BASE_URL + "?fragments=" + this.state.api_param_highlights + "&path=" + fullFacet + 
                 "&term=" + $('#search_form_ntm').val();
         var _this = this;
         $.ajax(url).then(function (entries) {
@@ -116,7 +116,7 @@ class App extends React.Component {
           this.setState({api_param_path: fullFacet});
       }
       console.log("Handling handleBreadcrumbClick: fullFacet - " + fullFacet);
-        let url = API_BASE_URL + "?highlights=" + this.state.api_param_highlights + "&path=" + fullFacet + 
+        let url = API_BASE_URL + "?fragments=" + this.state.api_param_highlights + "&path=" + fullFacet + 
                 "&term=" + $('#search_form_ntm').val();
         var _this = this;
         $.ajax(url).then(function (entries) {
@@ -181,10 +181,11 @@ class App extends React.Component {
        query_string_term = query_string_term.split('+').join('%2B');
        query_string_term = query_string_term.split(' ').join('+');
        console.log("query_string_term: "+query_string_term);
-        let url = API_BASE_URL + "?highlights=" + highlights + "&path=" + this.state.api_param_path + 
+        let url = API_BASE_URL + "?fragments=" + highlights + "&path=" + this.state.api_param_path + 
                 "&term=" + query_string_term;// + "&fragments=" + this.state.fragments;
         var _this = this;
         $.ajax(url).then(function (entries) {
+        console.log('Response Search Term = '+setSearchTerm(entries));
 //            _this.setState({entries: setEntries(entries), breadcrumb: setBreadcrumb(entries)});
             _this.setState(
 		{fragments: setFragments(entries), totalCount: setTotalCount(entries), term: setSearchTerm(entries), entries: setEntries(entries), breadcrumb: setBreadcrumb(entries)}
@@ -210,15 +211,19 @@ class AppBreadcrumb extends React.Component {
  * Navigation Bar component class
  */
 class AppNavBar extends React.Component {
+    
   constructor(props) {
     super(props);
+    let parsed_terms = parseInputTerm(this.props.term);
+    console.log("Parsed Terms: " + parsed_terms.allOf);
+    
     this.state = {
-      search_form_ntm: "",
-      inExact:"",
-      inAll:"",
-      inAny:"",
-      inNot:"",
-      highlights:"false"
+      search_form_ntm: this.props.term,
+      inExact: parsed_terms.exactOf,
+      inAll: parsed_terms.allOf,
+      inAny: parsed_terms.anyOf,
+      inNot: parsed_terms.noneOf,
+      highlights: "false"
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -257,12 +262,12 @@ class AppNavBar extends React.Component {
    
   handleSubmit(event) {
     event.preventDefault();
-    this.setState({
-        inExact:"",
-        inAll:"",
-        inAny:"",
-        inNot:""
-    });
+//    this.setState({
+//        inExact:"",
+//        inAll:"",
+//        inAny:"",
+//        inNot:""
+//    });
     this.props.handleSearchSubmitClick();
   }
 
@@ -340,29 +345,89 @@ class AppNavBar extends React.Component {
   }
 
   searchInputOnChange(event) {
-      console.log("Val changed to: "+event.target.value);
-      console.log(event.target);
-    this.setState({search_form_ntm: event.target.value});
+//      console.log("Val changed to: "+event.target.value);
+//      console.log(event.target);
+//    this.setState({search_form_ntm: event.target.value});
+    let parsed_terms = parseInputTerm(event.target.value);
+    console.log('Search Term---'+parsed_terms.term);
+//    console.log("parsed_terms.exactOf: "+parsed_terms.exactOf);
+//    console.log("parsed_terms.allOf: "+parsed_terms.allOf);
+    console.log('New Search Term:' + termFromFilters(parsed_terms));
+    
+    $('#inAll').val(parsed_terms.allOf);
+    $('#inNot').val(parsed_terms.noneOf);
+    $('#inAny').val(parsed_terms.anyOf);
+    $('#inExact').val(parsed_terms.exactOf);
+
+    this.setState({
+        search_form_ntm: event.target.value,
+        inExact: parsed_terms.exactOf,
+        inAll: parsed_terms.allOf,
+        inAny: parsed_terms.anyOf,
+        inNot: parsed_terms.noneOf
+    });
   }
   inAllInputOnChange(event) {
-      console.log("Val changed to: "+event.target.value);
-      console.log(event.target);
-    this.setState({inAll: event.target.value});
+//      console.log("Val changed to: "+event.target.value);
+//      console.log(event.target);
+//    let parsed_terms = parseInputTerm($("#search_form_ntm").val());
+    let parsed_terms = parseInputTerm(this.state.search_form_ntm);
+    console.log('Old Search Term:'+parsed_terms.term);
+    parsed_terms.allOf = event.target.value;
+    console.log('New Search Term:' + termFromFilters(parsed_terms));
+    
+    $("#search_form_ntm").val(termFromFilters(parsed_terms));
+    this.setState({
+        inAll: event.target.value,
+        search_form_ntm: termFromFilters(parsed_terms)
+    });
   }
   inAnyInputOnChange(event) {
       console.log("Val changed to: "+event.target.value);
       console.log(event.target);
-    this.setState({inAny: event.target.value});
+      
+//    let parsed_terms = parseInputTerm($("#search_form_ntm").val());
+    let parsed_terms = parseInputTerm(this.state.search_form_ntm);
+    console.log('Old Search Term:'+parsed_terms.term);
+    parsed_terms.anyOf = event.target.value;
+    console.log('New Search Term:' + termFromFilters(parsed_terms));
+    $("#search_form_ntm").val(termFromFilters(parsed_terms));
+
+    this.setState({
+        inAny: event.target.value,
+        search_form_ntm: termFromFilters(parsed_terms)
+    });
   }
   inNotInputOnChange(event) {
       console.log("Val changed to: "+event.target.value);
       console.log(event.target);
-    this.setState({inNot: event.target.value});
+      
+//    let parsed_terms = parseInputTerm($("#search_form_ntm").val());
+    let parsed_terms = parseInputTerm(this.state.search_form_ntm);
+    console.log('Old Search Term:'+parsed_terms.term);
+    parsed_terms.noneOf = event.target.value;
+    console.log('New Search Term:' + termFromFilters(parsed_terms));
+    $("#search_form_ntm").val(termFromFilters(parsed_terms));
+
+    this.setState({
+        inNot: event.target.value,
+        search_form_ntm: termFromFilters(parsed_terms)
+    });
   }
   inExactInputOnChange(event) {
       console.log("Val changed to: "+event.target.value);
       console.log(event.target);
-    this.setState({inExact: event.target.value});
+//    let parsed_terms = parseInputTerm($("#search_form_ntm").val());
+    let parsed_terms = parseInputTerm(this.state.search_form_ntm);
+    console.log('Old Search Term:'+parsed_terms.term);
+    parsed_terms.exactOf = event.target.value;
+    console.log('New Search Term:' + termFromFilters(parsed_terms));
+    $("#search_form_ntm").val(termFromFilters(parsed_terms));
+
+    this.setState({
+        inExact: event.target.value,
+        search_form_ntm: termFromFilters(parsed_terms)
+    });
   }
   
   render() {
@@ -787,4 +852,79 @@ function setBreadcrumb(myentries) {
       i++;
     }
     return breadcrumb;
+}
+
+function parseInputTerm(term)
+{
+    var term_split = term.split('"');
+    var exactOf = "";
+    var anyOf = "";
+    var allOf = "";
+    var noneOf = "";
+    var termWithoutExact = term;
+    if(term_split.length>2)
+    {
+        exactOf = term_split[1];
+        term_split.splice(1,1);
+        termWithoutExact = term_split.join('');
+    }
+    
+    var term_split_2 = termWithoutExact.split(" ");
+    for(let i=0;i<term_split_2.length;i++)
+    {
+        if(term_split_2[i].length && '+'===term_split_2[i].charAt(0) && term_split_2[i].substring(1).trim().length > 0)
+        {
+            anyOf+= ' ' + term_split_2[i].substring(1).trim();
+        } else if(term_split_2[i].length && '-'===term_split_2[i].charAt(0) && term_split_2[i].substring(1).trim().length > 0)
+        {
+            noneOf+= ' ' + term_split_2[i].substring(1).trim();
+        }else if(term_split_2[i].length)
+        {
+            allOf+= ' ' + term_split_2[i].trim();
+        }
+    }
+    
+    return {
+        'exactOf':exactOf.trim(),
+        'anyOf':anyOf.trim(),
+        'allOf':allOf.trim(),
+        'noneOf':noneOf.trim(),
+        'term':term
+        };
+}
+
+function termFromFilters(parsedTerms)
+{
+    console.log("Exact: "+parsedTerms.exactOf);
+    console.log("Any: "+parsedTerms.anyOf);
+    console.log("All: "+parsedTerms.allOf);
+    console.log("None: "+parsedTerms.noneOf);
+    
+    var term = '';
+//    console.log(!isNaN(parsedTerms.anyOf));
+//    console.log(parsedTerms.anyOf.length);
+//    console.log(!isNaN(parsedTerms.anyOf) && parsedTerms.anyOf.length);
+    if(parsedTerms.anyOf.trim().length)
+    {
+        //!isNaN(parsedTerms.anyOf) && 
+        term+='+' + parsedTerms.anyOf.trim().split(' ').join(' +');;
+    }
+    if(parsedTerms.noneOf.trim().length)
+    {
+        //!isNaN(parsedTerms.noneOf) && 
+        term+=' -' + parsedTerms.noneOf.trim().split(' ').join(' -');
+        
+    }
+    if(parsedTerms.allOf.length)
+    {
+        //!isNaN(parsedTerms.allOf) && 
+        term+=' ' + parsedTerms.allOf;
+    }
+    if(parsedTerms.exactOf.length)
+    {
+        //!isNaN(parsedTerms.exactOf) && 
+        term+=' "' + parsedTerms.exactOf + '"';
+    }
+    console.log("Final Term: "+term);
+    return term;
 }
