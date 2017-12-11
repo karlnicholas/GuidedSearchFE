@@ -1,6 +1,4 @@
 import React from 'react';
-//import ReactDOM from 'react';
-//import logo from './logo.svg';
 import './App.css';
 import $ from 'jquery';
 
@@ -13,6 +11,9 @@ const HOST_URL = 'http://rs-opca.b9ad.pro-us-east-1.openshiftapps.com/';
 
 const API_BASE_URL = HOST_URL + 'rest/gs';
 
+/**
+ * React App base class
+ */
 class App extends React.Component {
 
   constructor(props) {
@@ -81,6 +82,9 @@ class App extends React.Component {
 	 }
    }
    
+   /**
+    * Table link click handler
+    */
    handleDrillInClick(fullFacet) {
        console.log("Handling drill click: fullFacet - " + fullFacet);
       if ( fullFacet == null )
@@ -101,6 +105,9 @@ class App extends React.Component {
         });
    }
    
+   /**
+    * Breadcrumb click handler
+    */
    handleBreadcrumbClick(fullFacet) {
       if ( fullFacet == null )
       {
@@ -122,6 +129,9 @@ class App extends React.Component {
 
     }
    
+   /**
+    * Clear click handler
+    */
    handleClearClick() {
         console.log("Handling clearClick");
         $('#search_form_ntm').val("");
@@ -133,6 +143,9 @@ class App extends React.Component {
         this.handleAjax();
    }
    
+   /**
+    * Search click handler
+    */
    handleSearchSubmitClick(event) {
 //       console.log(event);
        
@@ -142,6 +155,9 @@ class App extends React.Component {
         this.handleAjax();
    }
 
+   /**
+    * Advanced Search click handler
+    */
    handleAdvancedSearchSubmitClick(event) {
 //       event.preventDefault();
 //        this.setState({
@@ -182,6 +198,9 @@ class App extends React.Component {
         this.handleAjax();
    }
    
+   /**
+    * Fragments click handler
+    */
    handleFragmentsClick() {
        //use value from hidden input field
        this.setState({
@@ -210,7 +229,10 @@ class App extends React.Component {
 }
 
 export default App;
-    
+
+/**
+ * Breadcrumb component class
+ */
 class AppBreadcrumb extends React.Component {
   render() {
     return (
@@ -219,6 +241,9 @@ class AppBreadcrumb extends React.Component {
    }
 }
 
+/**
+ * Navigation Bar component class
+ */
 class AppNavBar extends React.Component {
   constructor(props) {
     super(props);
@@ -451,6 +476,9 @@ class AppNavBar extends React.Component {
    }   
 }
 
+/**
+ * Fragments Button component class
+ */
 class FragmentsButton extends React.Component {
   render() {
       if(this.props.term)
@@ -483,6 +511,9 @@ class FragmentsButton extends React.Component {
    }
 }
 
+/**
+ * Breadcrumb component class
+ */
 class AppTitleTable extends React.Component {
   render() {
 //      <div className="container-fluid"></div>
@@ -495,6 +526,10 @@ class AppTitleTable extends React.Component {
       )
    }
 }
+
+/**
+ * App Statute Display Component class
+ */
 class AppStatuteDisplay extends React.Component {
   render() {
 //      <div className="panel panel-default">
@@ -508,6 +543,10 @@ class AppStatuteDisplay extends React.Component {
       )
    }   
 }
+
+/**
+ * Title Table Display Component class
+ */
 class TitleTable extends React.Component{
     render() {
         var entries = this.props.entries;
@@ -525,6 +564,10 @@ class TitleTable extends React.Component{
         return (<div className="panel ">{statutes}</div>)
     }
 }
+
+/**
+ * Title Row Display Component class
+ */
 class TitleRow extends React.Component{
 	render() {
 	    var statute = this.props.statute;
@@ -594,6 +637,10 @@ class TitleRow extends React.Component{
 		)
     }
 }
+
+/**
+ * Statute Table Display Component class
+ */
 class StatuteDisplayTable extends React.Component{
     render() {
         var entries = this.props.entries;
@@ -614,6 +661,9 @@ class StatuteDisplayTable extends React.Component{
     }
 }
 
+/**
+ * Statute Display Component class
+ */
 class StatuteDisplayRow extends React.Component{
 	render() {
 //	    var statute = this.props.statute;
@@ -628,6 +678,10 @@ class StatuteDisplayRow extends React.Component{
 		)
     }
 }
+
+/**
+ * Individual Breadcrumb rendering component class
+ */
 class Breadcrumb extends React.Component{
     render() {
         var breadcrumb = this.props.breadcrumb;
@@ -667,6 +721,9 @@ class Breadcrumb extends React.Component{
     }
 }
 
+/**
+ * Breadcrumb trail rendering component class
+ */
 class Trail extends React.Component{
     render() {
       var title = this.props.statutesBaseClass.displayTitle;
@@ -686,7 +743,9 @@ class Trail extends React.Component{
     }
 }
 
-
+/**
+ * StatuteRange component class
+ */
 class StatuteRangeDisplay extends React.Component{
 //    <span className="col-xs-3">§§&nbsp;{statute.statutesBaseClass.statuteRange.sNumber.sectionNumber}-{statute.statutesBaseClass.statuteRange.eNumber.sectionNumber} </span>
     render() {
@@ -714,6 +773,9 @@ class StatuteRangeDisplay extends React.Component{
     }
 }
 
+/**
+ * Format json for rendering table
+ */
 function setEntries(myentries) {
     if ( myentries.entries ) myentries = myentries.entries;
     if ( myentries.length === 0 ) return myentries;
@@ -723,6 +785,9 @@ function setEntries(myentries) {
     return myentries;
 }
 
+/**
+ * Return search term from response
+ */
 function setSearchTerm(input_json) {
     
     if ( input_json.term && input_json.term.length )
@@ -735,6 +800,9 @@ function setSearchTerm(input_json) {
     }
 }
 
+/**
+ * Return total results count
+ */
 function setTotalCount(input_json) {
     
     if ( input_json.totalCount)
@@ -747,6 +815,9 @@ function setTotalCount(input_json) {
     }
 }
 
+/**
+ * Format json for Fragments
+ */
 function setFragments(input_json) {
     
 //    return true; //testing only
@@ -760,6 +831,9 @@ function setFragments(input_json) {
     }
 }
 
+/**
+ * Format json for breadcrumb
+ */
 function setBreadcrumb(myentries) {
 	var breadcrumb = [myentries];
     if ( myentries.entries ) myentries = myentries.entries;
@@ -774,19 +848,3 @@ function setBreadcrumb(myentries) {
 //    console.log(breadcrumb);
     return breadcrumb;
 }
-
-
-/**
- * %2BTimtim+-apple+civil+"Misc"
- * Any of --> %2B
- * None of --> -
- * Any of --> +
- * Exact Phrase --> +""
- * 
- * term_all_of
- * term_none_of
- * term_any_of
- * term_exact
- * 
- * fragments
- */
