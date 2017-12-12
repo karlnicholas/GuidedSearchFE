@@ -36,8 +36,9 @@ class App extends React.Component {
   
   componentDidMount() {
     var _this = this;
+    let temp_query_string_term = encodeURIComponent(this.state.api_param_term);
     let ajax_fetch_url = API_BASE_URL + "?fragments=" + this.state.api_param_highlights + 
-            "&term=" + this.state.api_param_term + "&path=" + this.state.api_param_path;
+            "&term=" + temp_query_string_term + "&path=" + this.state.api_param_path;
 
     $.ajax(ajax_fetch_url).then(function (entries) {
     console.log("Setting Term: "); console.log(setSearchTerm(entries));
@@ -93,8 +94,10 @@ class App extends React.Component {
       {
           this.setState({api_param_path: fullFacet});
       }
+      let temp_query_string_term = encodeURIComponent($('#search_form_ntm').val());
+      
         let url = API_BASE_URL + "?fragments=" + this.state.api_param_highlights + "&path=" + fullFacet + 
-                "&term=" + $('#search_form_ntm').val();
+                "&term=" + temp_query_string_term;
         var _this = this;
         $.ajax(url).then(function (entries) {
             _this.setState(
@@ -115,9 +118,10 @@ class App extends React.Component {
       {
           this.setState({api_param_path: fullFacet});
       }
+      let temp_query_string_term = encodeURIComponent($('#search_form_ntm').val());
       console.log("Handling handleBreadcrumbClick: fullFacet - " + fullFacet);
         let url = API_BASE_URL + "?fragments=" + this.state.api_param_highlights + "&path=" + fullFacet + 
-                "&term=" + $('#search_form_ntm').val();
+                "&term=" + temp_query_string_term;
         var _this = this;
         $.ajax(url).then(function (entries) {
             _this.setState(
@@ -181,8 +185,9 @@ class App extends React.Component {
        query_string_term = query_string_term.split('+').join('%2B');
        query_string_term = query_string_term.split(' ').join('+');
        console.log("query_string_term: "+query_string_term);
+       let temp_query_string_term = encodeURIComponent($('#search_form_ntm').val());
         let url = API_BASE_URL + "?fragments=" + highlights + "&path=" + this.state.api_param_path + 
-                "&term=" + query_string_term;// + "&fragments=" + this.state.fragments;
+                "&term=" + temp_query_string_term;// + "&fragments=" + this.state.fragments;
         var _this = this;
         $.ajax(url).then(function (entries) {
         console.log('Response Search Term = '+setSearchTerm(entries));
