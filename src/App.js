@@ -273,6 +273,7 @@ class AppNavBar extends React.Component {
 //        inAny:"",
 //        inNot:""
 //    });
+    $('.panel-collapse').collapse('hide');
     this.props.handleSearchSubmitClick();
   }
 
@@ -306,6 +307,7 @@ class AppNavBar extends React.Component {
        }
        $('#search_form_ntm').val(full_term)
        this.setState({search_form_ntm: full_term});
+       $('.panel-collapse').collapse('hide');
        this.props.handleAdvancedSearchSubmitClick();
   }
   
@@ -319,6 +321,7 @@ class AppNavBar extends React.Component {
         highlights:"false"
     });
     $("#highlights").val("false");
+    $('.panel-collapse').collapse('hide');
     $("#highlights_button").removeClass("btn-info");
     
     this.props.handleClearClick();
@@ -344,6 +347,7 @@ class AppNavBar extends React.Component {
         this.setState({ highlights:"false"});
         console.log("Highlights Set to False");
         $("#highlights_button").removeClass("btn-info");
+        $('.panel-collapse').collapse('hide');
     }
     this.props.handleFragmentsClick();
 
