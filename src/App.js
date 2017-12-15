@@ -8,7 +8,6 @@ global.jQuery = $;
 const bootstrap = require('bootstrap');
 
 // const HOST_URL = 'http://gs-opca.b9ad.pro-us-east-1.openshiftapps.com';
-
 // const API_BASE_URL = HOST_URL + '/rest/gs';
 const API_BASE_URL = '/rest/gs';
 
