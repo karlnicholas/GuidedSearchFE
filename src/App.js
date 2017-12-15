@@ -7,9 +7,10 @@ window.$ = $;
 global.jQuery = $;
 const bootstrap = require('bootstrap');
 
-const HOST_URL = 'http://gs-opca.b9ad.pro-us-east-1.openshiftapps.com';
+// const HOST_URL = 'http://gs-opca.b9ad.pro-us-east-1.openshiftapps.com';
 
-const API_BASE_URL = HOST_URL + '/rest/gs';
+// const API_BASE_URL = HOST_URL + '/rest/gs';
+const API_BASE_URL = '/rest/gs';
 
 /**
  * React App base class
@@ -61,7 +62,7 @@ class App extends React.Component {
                           handleAdvancedSearchSubmitClick={this.handleAdvancedSearchSubmitClick.bind(this)}  handleClearClick={this.handleClearClick.bind(this)} />
                 <AppBreadcrumb breadcrumb={this.state.breadcrumb} handleBreadcrumbClick={this.handleBreadcrumbClick.bind(this)} term={this.state.term} totalCount={this.state.totalCount} />
                 <AppStatuteDisplay entries={this.state.entries} term={this.state.term} />
-                <div id="footer">Copyright ©, 2014</div>
+                <div id="footer">Copyright ©, 2017</div>
             </span>
 	      )
 	 } else if ( l > 0 ) {
@@ -71,7 +72,7 @@ class App extends React.Component {
                           handleAdvancedSearchSubmitClick={this.handleAdvancedSearchSubmitClick.bind(this)}  handleClearClick={this.handleClearClick.bind(this)} />
                 <AppBreadcrumb breadcrumb={this.state.breadcrumb} handleBreadcrumbClick={this.handleBreadcrumbClick.bind(this)} term={this.state.term} totalCount={this.state.totalCount} />
                 <AppTitleTable fragments={this.state.fragments} entries={this.state.entries} term={this.state.term} handleDrillInClick={this.handleDrillInClick.bind(this)} />
-                <div id="footer">Copyright ©, 2014</div>
+                <div id="footer">Copyright ©, 2017</div>
             </span>
 	    )
 	 } else {
@@ -191,7 +192,6 @@ class App extends React.Component {
         var _this = this;
         $.ajax(url).then(function (entries) {
         console.log('Response Search Term = '+setSearchTerm(entries));
-//            _this.setState({entries: setEntries(entries), breadcrumb: setBreadcrumb(entries)});
             _this.setState(
 		{fragments: setFragments(entries), totalCount: setTotalCount(entries), term: setSearchTerm(entries), entries: setEntries(entries), breadcrumb: setBreadcrumb(entries)}
             );
@@ -243,7 +243,10 @@ class AppNavBar extends React.Component {
     this.inNotInputOnChange = this.inNotInputOnChange.bind(this);
     this.inExactInputOnChange = this.inExactInputOnChange.bind(this);
   }
-  
+
+  /**
+   * Handle search form keypress
+   */
    handleFormOnKeyPress(event)
    {
        
@@ -254,29 +257,25 @@ class AppNavBar extends React.Component {
             {
                 this.handleAdvancedSearch(event);
             }
-            else
-            {
-                
-            }
           }
           else
           {
               console.log('no enter press here! ')
           }
    }
-   
+
+   /**
+    * Submit search form collapses.
+    */
   handleSubmit(event) {
     event.preventDefault();
-//    this.setState({
-//        inExact:"",
-//        inAll:"",
-//        inAny:"",
-//        inNot:""
-//    });
     $('.panel-collapse').collapse('hide');
     this.props.handleSearchSubmitClick();
   }
 
+  /**
+   * Fill out and handle advanced search form.
+   */
   handleAdvancedSearch(event) {
     event.preventDefault();
     $('.dropdown.open .dropdown-toggle').dropdown('toggle');
@@ -290,7 +289,6 @@ class AppNavBar extends React.Component {
        }
        if($('#inNot').val().length)
        {
-//           full_term+= '-'+$('#inNot').val()+" ";
            let input_term = $('#inNot').val();
            input_term = input_term.trim();
            input_term = input_term.split(' ').join(' -');
@@ -310,7 +308,10 @@ class AppNavBar extends React.Component {
        $('.panel-collapse').collapse('hide');
        this.props.handleAdvancedSearchSubmitClick();
   }
-  
+
+  /**
+   * Clear search input and form.
+   */
   handleClearSearch(event) {
     this.setState({
         search_form_ntm: "",
@@ -327,9 +328,10 @@ class AppNavBar extends React.Component {
     this.props.handleClearClick();
   }
   
+  /**
+   * Handle fragment button clicked
+   */
   handleFragmentSearch(event) {
-      
-//    event.preventDefault();
     let prev_highlights = $("#highlights").val();
     console.log("Updating Value - ");
     if(prev_highlights==='false')
@@ -353,14 +355,12 @@ class AppNavBar extends React.Component {
 
   }
 
+  /**
+   * Handle input changes on search form.
+   */
   searchInputOnChange(event) {
-//      console.log("Val changed to: "+event.target.value);
-//      console.log(event.target);
-//    this.setState({search_form_ntm: event.target.value});
     let parsed_terms = parseInputTerm(event.target.value);
     console.log('Search Term---'+parsed_terms.term);
-//    console.log("parsed_terms.exactOf: "+parsed_terms.exactOf);
-//    console.log("parsed_terms.allOf: "+parsed_terms.allOf);
     console.log('New Search Term:' + termFromFilters(parsed_terms));
     
     $('#inAll').val(parsed_terms.allOf);
@@ -376,10 +376,10 @@ class AppNavBar extends React.Component {
         inNot: parsed_terms.noneOf
     });
   }
+  /**
+   * Handle All Of input search terms
+   */
   inAllInputOnChange(event) {
-//      console.log("Val changed to: "+event.target.value);
-//      console.log(event.target);
-//    let parsed_terms = parseInputTerm($("#search_form_ntm").val());
     let parsed_terms = parseInputTerm(this.state.search_form_ntm);
     console.log('Old Search Term:'+parsed_terms.term);
     parsed_terms.allOf = event.target.value;
@@ -391,11 +391,13 @@ class AppNavBar extends React.Component {
         search_form_ntm: termFromFilters(parsed_terms)
     });
   }
+  /**
+   * Handle inputs on inAny search form.
+   */
   inAnyInputOnChange(event) {
       console.log("Val changed to: "+event.target.value);
       console.log(event.target);
       
-//    let parsed_terms = parseInputTerm($("#search_form_ntm").val());
     let parsed_terms = parseInputTerm(this.state.search_form_ntm);
     console.log('Old Search Term:'+parsed_terms.term);
     parsed_terms.anyOf = event.target.value;
@@ -407,11 +409,13 @@ class AppNavBar extends React.Component {
         search_form_ntm: termFromFilters(parsed_terms)
     });
   }
+  /**
+   * Handle None Of input search terms
+   */
   inNotInputOnChange(event) {
       console.log("Val changed to: "+event.target.value);
       console.log(event.target);
       
-//    let parsed_terms = parseInputTerm($("#search_form_ntm").val());
     let parsed_terms = parseInputTerm(this.state.search_form_ntm);
     console.log('Old Search Term:'+parsed_terms.term);
     parsed_terms.noneOf = event.target.value;
@@ -423,10 +427,12 @@ class AppNavBar extends React.Component {
         search_form_ntm: termFromFilters(parsed_terms)
     });
   }
+  /**
+   * Handle Exact Phrase input term
+   */
   inExactInputOnChange(event) {
       console.log("Val changed to: "+event.target.value);
       console.log(event.target);
-//    let parsed_terms = parseInputTerm($("#search_form_ntm").val());
     let parsed_terms = parseInputTerm(this.state.search_form_ntm);
     console.log('Old Search Term:'+parsed_terms.term);
     parsed_terms.exactOf = event.target.value;
@@ -543,12 +549,9 @@ class FragmentsButton extends React.Component {
  */
 class AppTitleTable extends React.Component {
   render() {
-//      <div className="container-fluid"></div>
     return (
-        
         <div className="panel-group" id="accordion">
           <TitleTable fragments={this.props.fragments} entries={this.props.entries} onClick={this.props.handleDrillInClick}/>
-        
         </div>
       )
    }
@@ -559,7 +562,6 @@ class AppTitleTable extends React.Component {
  */
 class AppStatuteDisplay extends React.Component {
   render() {
-//      <div className="panel panel-default"></div>
     return (
         <div className="container-fluid">
             <div className="panel-group" id="accordion">
@@ -625,7 +627,6 @@ class TitleRow extends React.Component{
                       <span className="col-xs-1"></span>
                     }
 		      <a onClick={() => this.props.onClick(statute.fullFacet)} style={{cursor: 'pointer'}} >
-                      
                           <span className="col-xs-3">{statute.displayTitle}&nbsp; 
                             <span className="badge pull-right">{statute.count ? statute.count : ""}</span>
                           </span>
@@ -646,17 +647,12 @@ class TitleRow extends React.Component{
 		      </a>
 		    </p>
 	        </div>
-        
-        
-                <div className="panel-collapse collapse" id={this.props.collapse_data_key}>
-                    <div className="panel-body">
-                      <pre dangerouslySetInnerHTML={{ __html: statuteSectionText }} />
-                    </div>
-                </div>
-  
-  
-  
+	        <div className="panel-collapse collapse" id={this.props.collapse_data_key}>
+	          <div className="panel-body">
+                 <pre dangerouslySetInnerHTML={{ __html: statuteSectionText }} />
               </div>
+            </div>
+          </div>
 		)
     }
 }
@@ -676,10 +672,8 @@ class StatuteDisplayTable extends React.Component{
         {
 //            statute.text = statute.text.split(search_term).join('<mark><strong><u>' + search_term + '</u></strong></mark>');
         }
-
           statutes.push(<StatuteDisplayRow statute={statute} key={i}/>);
         }
-//        panel-default
         return (<div className="panel ">{statutes}</div>)
     }
 }
@@ -690,9 +684,9 @@ class StatuteDisplayTable extends React.Component{
 class StatuteDisplayRow extends React.Component{
 	render() {
 	    return (
-	      <div className="panel-body">
-		<pre dangerouslySetInnerHTML={{ __html: this.props.statute.text }} />
-	      </div>
+         <div className="panel-body">
+           <pre dangerouslySetInnerHTML={{ __html: this.props.statute.text }} />
+	     </div>
 		)
     }
 }
@@ -725,11 +719,11 @@ class Breadcrumb extends React.Component{
         if(term && term.length)
         {
             return (
-                    <ol className="breadcrumb">
-                    {trails}
-                    <li><span className="badge pull-right">{this.props.totalCount}</span></li>
-                    </ol>
-                    )
+                <ol className="breadcrumb">
+                {trails}
+                <li><span className="badge pull-right">{this.props.totalCount}</span></li>
+                </ol>
+                )
         }
         else
         {
@@ -754,7 +748,6 @@ class Trail extends React.Component{
       {
           title+=this.props.extraPart;
       }
-      
       return (
 		<li><a onClick={()=>this.props.onClick(fullFacet)} style={{cursor: 'pointer'}}>{title}</a></li>
 	  )
@@ -863,6 +856,11 @@ function setBreadcrumb(myentries) {
     return breadcrumb;
 }
 
+/**
+ * Function to create search form field contents. 
+ * @param term
+ * @returns
+ */
 function parseInputTerm(term)
 {
     var term_split = term.split('"');
@@ -902,6 +900,12 @@ function parseInputTerm(term)
         };
 }
 
+/**
+ * Function to format search terms for apache lucene search engine
+ * 
+ * @param parsedTerms
+ * @returns
+ */
 function termFromFilters(parsedTerms)
 {
     console.log("Exact: "+parsedTerms.exactOf);
@@ -910,28 +914,21 @@ function termFromFilters(parsedTerms)
     console.log("None: "+parsedTerms.noneOf);
     
     var term = '';
-//    console.log(!isNaN(parsedTerms.anyOf));
-//    console.log(parsedTerms.anyOf.length);
-//    console.log(!isNaN(parsedTerms.anyOf) && parsedTerms.anyOf.length);
     if(parsedTerms.anyOf.trim().length)
     {
-        //!isNaN(parsedTerms.anyOf) && 
-        term+='+' + parsedTerms.anyOf.trim().split(' ').join(' +');;
+        term+='+' + parsedTerms.anyOf.trim().split(' ').join(' +');
     }
     if(parsedTerms.noneOf.trim().length)
     {
-        //!isNaN(parsedTerms.noneOf) && 
         term+=' -' + parsedTerms.noneOf.trim().split(' ').join(' -');
         
     }
     if(parsedTerms.allOf.length)
     {
-        //!isNaN(parsedTerms.allOf) && 
         term+=' ' + parsedTerms.allOf;
     }
     if(parsedTerms.exactOf.length)
     {
-        //!isNaN(parsedTerms.exactOf) && 
         term+=' "' + parsedTerms.exactOf + '"';
     }
     console.log("Final Term: "+term);
