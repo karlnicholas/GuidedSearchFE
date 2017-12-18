@@ -7,9 +7,9 @@ window.$ = $;
 global.jQuery = $;
 const bootstrap = require('bootstrap');
 
-// const HOST_URL = 'http://gs-opca.b9ad.pro-us-east-1.openshiftapps.com';
-// const API_BASE_URL = HOST_URL + '/rest/gs';
-const API_BASE_URL = '/rest/gs';
+ const HOST_URL = 'http://gs-opca.b9ad.pro-us-east-1.openshiftapps.com';
+ const API_BASE_URL = HOST_URL + '/rest/gs';
+//const API_BASE_URL = '/rest/gs';
 
 /**
  * React App base class
@@ -54,27 +54,23 @@ class App extends React.Component {
     var entries = this.state.entries;
     var l = entries.length;
 //    console.log("entries length"); console.log(l);
-    if ( l > 0 && entries[0].sectionText) {
+    if ( l > 0 ) {
 	    return (
             <span>
                 <AppNavBar term={this.state.term} handleFragmentsClick={this.handleFragmentsClick.bind(this)} handleSearchSubmitClick={this.handleSearchSubmitClick.bind(this)}
                           handleAdvancedSearchSubmitClick={this.handleAdvancedSearchSubmitClick.bind(this)}  handleClearClick={this.handleClearClick.bind(this)} />
                 <AppBreadcrumb breadcrumb={this.state.breadcrumb} handleBreadcrumbClick={this.handleBreadcrumbClick.bind(this)} term={this.state.term} totalCount={this.state.totalCount} />
-                <AppStatuteDisplay entries={this.state.entries} term={this.state.term} />
+                { 
+                    this.state.entries[0].sectionText 
+                    ?
+                    <AppStatuteDisplay entries={this.state.entries} term={this.state.term} />
+                    :
+                    <AppTitleTable fragments={this.state.fragments} entries={this.state.entries} term={this.state.term} handleDrillInClick={this.handleDrillInClick.bind(this)} />
+                }
                 <div id="footer">Copyright ©, 2017</div>
             </span>
 	      )
-	 } else if ( l > 0 ) {
-	    return (
-            <span>
-                <AppNavBar term={this.state.term} handleFragmentsClick={this.handleFragmentsClick.bind(this)} handleSearchSubmitClick={this.handleSearchSubmitClick.bind(this)}
-                          handleAdvancedSearchSubmitClick={this.handleAdvancedSearchSubmitClick.bind(this)}  handleClearClick={this.handleClearClick.bind(this)} />
-                <AppBreadcrumb breadcrumb={this.state.breadcrumb} handleBreadcrumbClick={this.handleBreadcrumbClick.bind(this)} term={this.state.term} totalCount={this.state.totalCount} />
-                <AppTitleTable fragments={this.state.fragments} entries={this.state.entries} term={this.state.term} handleDrillInClick={this.handleDrillInClick.bind(this)} />
-                <div id="footer">Copyright ©, 2017</div>
-            </span>
-	    )
-	 } else {
+	 }else {
 	    return (
 	       <div>Loading ...</div>
 	    )
