@@ -53,7 +53,6 @@ class App extends React.Component {
   render() {
     var entries = this.state.entries;
     var l = entries.length;
-//    console.log("entries length"); console.log(l);
     if ( l > 0 ) {
 	    return (
             <span>
@@ -145,8 +144,6 @@ class App extends React.Component {
     * Search click handler
     */
    handleSearchSubmitClick(event) {
-//       console.log(event);
-//        event.preventDefault();
 //        let search_term = $('#search_form_ntm').val();
         console.log("Search Term: "+this.state.api_param_term);
         this.handleAjax();
@@ -183,7 +180,7 @@ class App extends React.Component {
        console.log("query_string_term: "+query_string_term);
        let temp_query_string_term = encodeURIComponent($('#search_form_ntm').val());
         let url = API_BASE_URL + "?fragments=" + highlights + "&path=" + this.state.api_param_path + 
-                "&term=" + temp_query_string_term;// + "&fragments=" + this.state.fragments;
+                "&term=" + temp_query_string_term;
         var _this = this;
         $.ajax(url).then(function (entries) {
         console.log('Response Search Term = '+setSearchTerm(entries));
@@ -583,7 +580,7 @@ class TitleTable extends React.Component{
           collapse_data_href = '#collapse'+i;
           statutes.push(<TitleRow fragments={this.props.fragments} statute={statute} collapse_data_href={collapse_data_href} collapse_data_key={collapse_data_key} key={i} onClick={(fullFacet)=>this.props.onClick(fullFacet)} />);
         }
-//        panel-default
+
         return (<div className="panel ">{statutes}</div>)
     }
 }
@@ -780,6 +777,8 @@ class StatuteRangeDisplay extends React.Component{
 
 /**
  * Format json for rendering table
+ * @param myentries
+ * @returns
  */
 function setEntries(myentries) {
     if ( myentries.entries ) myentries = myentries.entries;
@@ -792,6 +791,9 @@ function setEntries(myentries) {
 
 /**
  * Return search term from response
+ * @param input_json
+ * @returns
+ * 
  */
 function setSearchTerm(input_json) {
     
@@ -807,6 +809,8 @@ function setSearchTerm(input_json) {
 
 /**
  * Return total results count
+ * @param input_json
+ * @returns
  */
 function setTotalCount(input_json) {
     
@@ -822,6 +826,8 @@ function setTotalCount(input_json) {
 
 /**
  * Format json for Fragments
+ * @param input_json
+ * @returns
  */
 function setFragments(input_json) {
     
@@ -837,6 +843,8 @@ function setFragments(input_json) {
 
 /**
  * Format json for breadcrumb
+ * @param myentries
+ * @returns
  */
 function setBreadcrumb(myentries) {
 	var breadcrumb = [myentries];
