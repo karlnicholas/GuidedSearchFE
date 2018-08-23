@@ -7,7 +7,7 @@ window.$ = $;
 global.jQuery = $;
 const bootstrap = require('bootstrap');
 
-// const HOST_URL = 'http://gs-opca.b9ad.pro-us-east-1.openshiftapps.com';
+// const HOST_URL = 'http://op-opca.b9ad.pro-us-east-1.openshiftapps.com';
 // const API_BASE_URL = HOST_URL + '/rest/gs';
 const API_BASE_URL = '/rest/gs';
 
@@ -442,7 +442,7 @@ class AppNavBar extends React.Component {
     return (
         <nav id="navigation" className="navbar navbar-default navbar-fixed-top">
   <div className="navbar-header">
-    <a href="search" className="navbar-brand">Guided Search</a>
+    <a href="/" className="navbar-brand">Guided Search</a>
     <form className="navbar-form navbar-left form-horizontal" method="post">
       <input  type="text" className="form-control" value={this.state.search_form_ntm} onChange={this.searchInputOnChange} id="search_form_ntm" name="ntm" placeholder="Search" />
       <div className="btn-group dropdown">
@@ -490,8 +490,8 @@ class AppNavBar extends React.Component {
     <ul className="nav navbar-nav">
       <li className="dropdown"><a style={{cursor: 'pointer'}} className="dropdown-toggle navbar-brand" data-toggle="dropdown">Applications <span className="caret"></span></a>
         <ul className="dropdown-menu" role="menu">
-          <li><a href="http://op-op.b9ad.pro-us-east-1.openshiftapps.com">Court Opinions</a></li>
           <li><a href="/">Guided Search</a></li>
+          <li><a href="/opinions/">Court Opinions</a></li>
         </ul>
       </li>
     </ul>
